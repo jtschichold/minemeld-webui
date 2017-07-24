@@ -88,6 +88,28 @@ function credentialsListConfig($stateProvider: ng.ui.IStateProvider) {
                 }
             }
         })
+        .state('nodedetail.trustarinfo', {
+            templateUrl: 'app/nodedetail/credentials.info.html',
+            controller: NodeDetailCredentialsInfoController,
+            controllerAs: 'nodedetailinfo',
+            params: {
+                usernameEnabled: {
+                    value: true
+                },
+                usernameName: {
+                    value: 'API KEY'
+                },
+                usernameField: {
+                    value: 'api_key'
+                },
+                secretName: {
+                    value: 'API SECRET'
+                },
+                secretField: {
+                    value: 'api_secret'
+                }
+            }
+        })
         ;
 }
 
@@ -218,6 +240,27 @@ function credentialsRegisterClasses(NodeDetailResolver: INodeDetailResolverServi
             active: false
         }]
     });
+
+    NodeDetailResolver.registerClass('minemeld.ft.trustar.Indicators', {
+        tabs: [{
+            icon: 'fa fa-circle-o',
+            tooltip: 'INFO',
+            state: 'nodedetail.trustarinfo',
+            active: false
+        },
+        {
+            icon: 'fa fa-area-chart',
+            tooltip: 'STATS',
+            state: 'nodedetail.stats',
+            active: false
+        },
+        {
+            icon: 'fa fa-asterisk',
+            tooltip: 'GRAPH',
+            state: 'nodedetail.graph',
+            active: false
+        }]
+    });
 }
 
 export class NodeDetailCredentialsInfoController extends NodeDetailInfoController {
@@ -229,6 +272,8 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
     usernameEnabled: boolean = true;
     secretName: string = 'PASSWORD';
     secretField: string = 'password';
+    usernameName: string = 'USERNAME';
+    usernameField: string = 'username';
 
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
@@ -255,6 +300,12 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
         }
         if ($stateParams['secretField']) {
             this.secretField = $stateParams['secretField'];
+        }
+        if ($stateParams['usernameName']) {
+            this.usernameName = $stateParams['usernameName'];
+        }
+        if ($stateParams['usernameField']) {
+            this.usernameField = $stateParams['usernameField'];
         }
 
         this.loadSideConfig();
@@ -328,6 +379,7 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
             backdrop: 'static',
             animation: false,
             resolve: {
+                usernameName: () => { return this.usernameName; },
                 username: () => { return this.username; }
             }
         });
@@ -337,10 +389,10 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
 
             return this.saveSideConfig();
         }, (error: any) => {
-            this.toastr.error('ERROR SETTING USERNAME: ' + error.statusText);
+            this.toastr.error('ERROR SETTING ' + this.usernameName + ': ' + error.statusText);
         })
         .then((result: any) => {
-            this.toastr.success('USERNAME SET');
+            this.toastr.success(this.usernameName + ' SET');
         });
     }
 
@@ -358,8 +410,8 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
             this.secret = undefined;
         }
 
-        if (this.usernameEnabled && result.username) {
-            this.username = result.username;
+        if (this.usernameEnabled && result[this.usernameField]) {
+            this.username = result[this.usernameField];
         } else {
             this.username = undefined;
         }
@@ -372,7 +424,7 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
             side_config[this.secretField] = this.secret;
         }
         if (this.username && this.usernameEnabled) {
-            side_config.username = this.username;
+            side_config[this.usernameField] = this.username;
         }
 
         return side_config;
@@ -428,11 +480,14 @@ class CredentialsSetUsernameController {
     $modalInstance: angular.ui.bootstrap.IModalServiceInstance;
 
     username: string;
+    usernameName: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance, username: string) {
+    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+                username: string, usernameName: string) {
         this.$modalInstance = $modalInstance;
         this.username = username;
+        this.usernameName = usernameName;
     }
 
     valid(): boolean {
