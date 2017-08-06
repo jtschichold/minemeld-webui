@@ -241,7 +241,7 @@ function credentialsRegisterClasses(NodeDetailResolver: INodeDetailResolverServi
         }]
     });
 
-    NodeDetailResolver.registerClass('minemeld.ft.trustar.Indicators', {
+    NodeDetailResolver.registerClass('minemeld.ft.trustar.Reports', {
         tabs: [{
             icon: 'fa fa-circle-o',
             tooltip: 'INFO',
