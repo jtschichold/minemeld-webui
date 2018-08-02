@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { NodeDetailCredentialsInfoController } from './credentials.controller';
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
@@ -12,7 +12,7 @@ import { IMineMeldRunningConfigStatusService, IMineMeldRunningConfigStatus, IMin
 function taxiiClientConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.taxiiclientinfo', {
-            templateUrl: 'app/nodedetail/taxiiclient.info.html',
+            template: require('./taxiiclient.info.tpl'),
             controller: TAXIIClientInfoController,
             controllerAs: 'nodedetailinfo'
         })
@@ -64,14 +64,20 @@ class TAXIIClientInfoController extends NodeDetailCredentialsInfoController {
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService,
         MineMeldRunningConfigStatusService: IMineMeldRunningConfigStatusService,
         ConfirmService: IConfirmService) {
+        super(
+            toastr, $interval, MinemeldStatusService, $scope,
+            $compile, $state, $stateParams, MinemeldConfigService, $uibModal,
+            $rootScope, ThrottleService
+        );
+
         this.MineMeldRunningConfigStatusService = MineMeldRunningConfigStatusService;
 
         this.clientCertEnabled = false;
@@ -81,12 +87,6 @@ class TAXIIClientInfoController extends NodeDetailCredentialsInfoController {
         this.serverCASet = false;
 
         this.subscriptionIdEnabled = false;
-
-        super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
-            $compile, $state, $stateParams, MinemeldConfigService, $modal,
-            $rootScope, ThrottleService
-        );
 
         this.ConfirmService = ConfirmService;
     }
@@ -178,7 +178,7 @@ class TAXIIClientInfoController extends NodeDetailCredentialsInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/taxiiclient.uploadcert.modal.html',
+            template: require('./taxiiclient.uploadcert.modal.tpl'),
             controller: UploadClientCertController,
             controllerAs: 'vm',
             bindToController: true,
@@ -199,7 +199,7 @@ class TAXIIClientInfoController extends NodeDetailCredentialsInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/taxiiclient.uploadserverca.modal.html',
+            template: require('./taxiiclient.uploadserverca.modal.tpl'),
             controller: UploadServerCACertController,
             controllerAs: 'vm',
             bindToController: true,
@@ -224,7 +224,7 @@ class TAXIIClientInfoController extends NodeDetailCredentialsInfoController {
         }
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/taxiiclient.sid.modal.html',
+            template: require('./taxiiclient.sid.modal.tpl'),
             controller: SetSubscriptionIdController,
             controllerAs: 'vm',
             bindToController: true,
@@ -278,11 +278,11 @@ class UploadClientCertController {
     keyUploader: any;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 FileUploader: any,
                 toastr: any,
                 nodeName: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.toastr = toastr;
 
         this.certUploader = new FileUploader({
@@ -338,11 +338,11 @@ class UploadServerCACertController {
     certUploader: any;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 FileUploader: any,
                 toastr: any,
                 nodeName: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.toastr = toastr;
 
         this.certUploader = new FileUploader({
@@ -387,8 +387,8 @@ class SetSubscriptionIdController {
     subscriptionId: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance, subscriptionId: string) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance, subscriptionId: string) {
+        this.$modalInstance = $uibModalInstance;
         this.subscriptionId = subscriptionId;
     }
 

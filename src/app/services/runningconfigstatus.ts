@@ -1,9 +1,8 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMinemeldConfigService, IMinemeldConfig, IMinemeldConfigNode } from './config';
 import { IMineMeldAPIService } from './minemeldapi';
 import { IMinemeldPrototypeService, IMinemeldPrototype } from './prototype';
 import { IMineMeldEngineStatusService, IMineMeldEngineStatus } from './enginestatus';
+import { forEach as angular_forEach } from 'angular';
 
 export interface IMinemeldResolvedConfigNode {
     name: string;
@@ -98,7 +97,7 @@ export class MineMeldRunningConfigStatusService implements IMineMeldRunningConfi
             return this.MinemeldPrototypeService.getPrototypeLibraries(false).then((result: any) => {
                 var resolvedNodes: ng.IPromise<IMinemeldResolvedConfigNode>[] = [];
 
-                angular.forEach(rconfig.nodes, (node: IMinemeldConfigNode, nodename: string) => {
+                angular_forEach(rconfig.nodes, (node: IMinemeldConfigNode, nodename: string) => {
                     if (typeof node.prototype === 'undefined') {
                         resolvedNodes.push(this.$q.when({
                             name: nodename,
@@ -122,7 +121,7 @@ export class MineMeldRunningConfigStatusService implements IMineMeldRunningConfi
                         nodes: {}
                     };
 
-                    angular.forEach(rconfignodes, (node: IMinemeldResolvedConfigNode) => {
+                    angular_forEach(rconfignodes, (node: IMinemeldResolvedConfigNode) => {
                         this.currentStatus.nodes[node.name] = node;
                     });
 

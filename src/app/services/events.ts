@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMineMeldAPIService } from './minemeldapi';
 
 export interface IMinemeldEventsService {
@@ -110,7 +108,7 @@ export class MinemeldEventsService implements IMinemeldEventsService {
         if ((e.data === 'ok') || (e.data === 'ko') || (e.data == 'ping')) {
             return;
         }
-        angular.forEach(this.subscriptions, (sub: ISubscription) => {
+        this.subscriptions.forEach((sub: ISubscription) => {
            if ((sub.subType !== subtype) || (sub.topic !== event)) {
                return;
            }
@@ -121,7 +119,7 @@ export class MinemeldEventsService implements IMinemeldEventsService {
     }
 
     private onOpen(subtype: string, event: string, e: any) {
-        angular.forEach(this.subscriptions, (sub: ISubscription) => {
+        this.subscriptions.forEach((sub: ISubscription) => {
            if ((sub.subType !== subtype) || (sub.topic !== event)) {
                return;
            }
@@ -134,7 +132,7 @@ export class MinemeldEventsService implements IMinemeldEventsService {
     private onError(subtype: string, event: string, e: any) {
         var ruri: string;
 
-        angular.forEach(this.subscriptions, (sub: ISubscription) => {
+        this.subscriptions.forEach((sub: ISubscription) => {
            if ((sub.subType !== subtype) || (sub.topic !== event)) {
                return;
            }
@@ -216,7 +214,7 @@ export class MinemeldEventsService implements IMinemeldEventsService {
             return;
         }
 
-        angular.forEach(this.subscriptions, (sub: ISubscription) => {
+        this.subscriptions.forEach((sub: ISubscription) => {
             if ((sub.topic === event) && (sub.subType === subtype)) {
                 nref += 1;
             }

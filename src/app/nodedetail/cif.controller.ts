@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { NodeDetailCredentialsInfoController } from './credentials.controller';
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
@@ -11,7 +11,7 @@ import { IConfirmService } from '../../app/services/confirm';
 function CIFConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.cifinfo', {
-            templateUrl: 'app/nodedetail/cif.info.html',
+            template: require('./cif.info.tpl'),
             controller: NodeDetailCIFInfoController,
             controllerAs: 'nodedetailinfo',
             params: {
@@ -80,16 +80,16 @@ class NodeDetailCIFInfoController extends NodeDetailCredentialsInfoController {
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService,
         ConfirmService: IConfirmService) {
         super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
-            $compile, $state, $stateParams, MinemeldConfigService, $modal,
+            toastr, $interval, MinemeldStatusService, $scope,
+            $compile, $state, $stateParams, MinemeldConfigService, $uibModal,
             $rootScope, ThrottleService
         );
 
@@ -100,7 +100,7 @@ class NodeDetailCIFInfoController extends NodeDetailCredentialsInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/cif.remote.modal.html',
+            template: require('./cif.remote.modal.tpl'),
             controller: CIFSetRemoteController,
             controllerAs: 'vm',
             bindToController: true,
@@ -155,7 +155,7 @@ class NodeDetailCIFInfoController extends NodeDetailCredentialsInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/cif.filters.modal.html',
+            template: require('./cif.filters.modal.tpl'),
             controller: CIFSetFiltersController,
             controllerAs: 'vm',
             bindToController: true,
@@ -264,8 +264,8 @@ class CIFSetRemoteController {
     remote: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance, remote: string) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance, remote: string) {
+        this.$modalInstance = $uibModalInstance;
         this.remote = remote;
     }
 
@@ -319,9 +319,9 @@ class CIFSetFiltersController {
     changed: boolean;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 filters: ICIFSideConfigFilters) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.filters = filters;
 
         if (this.filters) {

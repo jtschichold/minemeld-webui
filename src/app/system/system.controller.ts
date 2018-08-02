@@ -1,4 +1,5 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
+import * as moment from 'moment';
 
 import { IMinemeldStatusService } from  '../../app/services/status';
 import { IMinemeldSupervisorService } from '../../app/services/supervisor';
@@ -8,7 +9,9 @@ import { IMinemeldPrototypeService } from '../services/prototype';
 import { IMinemeldConfigService } from '../services/config';
 import { IConfirmService } from '../../app/services/confirm';
 
-export class SystemController {
+import './system.style';
+
+export class SystemController implements angular.IController {
     $state: angular.ui.IStateService;
     tabs: boolean[] = [true, false];
 
@@ -16,9 +19,11 @@ export class SystemController {
     constructor($state: angular.ui.IStateService) {
         this.$state = $state;
     }
+
+    $onInit() {}
 }
 
-export class SystemDashboardController {
+export class SystemDashboardController  implements angular.IController {
     mmstatus: IMinemeldStatusService;
     MinemeldSupervisorService: IMinemeldSupervisorService;
     MinemeldTracedService: IMinemeldTracedService;
@@ -29,7 +34,6 @@ export class SystemDashboardController {
     toastr: any;
     $interval: angular.IIntervalService;
     $scope: angular.IScope;
-    moment: moment.MomentStatic;
     $modal: angular.ui.bootstrap.IModalService;
     $state: angular.ui.IStateService;
     $window: angular.IWindowService;
@@ -59,10 +63,9 @@ export class SystemDashboardController {
                 MinemeldPrototypeService: IMinemeldPrototypeService,
                 MinemeldConfigService: IMinemeldConfigService,
                 $window: angular.IWindowService,
-                $modal: angular.ui.bootstrap.IModalService,
+                $uibModal: angular.ui.bootstrap.IModalService,
                 ConfirmService: IConfirmService,
                 $rootScope: angular.IRootScopeService,
-                moment: moment.MomentStatic,
                 MinemeldSupervisorService: IMinemeldSupervisorService, $state: angular.ui.IStateService) {
         this.toastr = toastr;
         this.mmstatus = MinemeldStatusService;
@@ -74,8 +77,7 @@ export class SystemDashboardController {
         this.ConfirmService = ConfirmService;
         this.$interval = $interval;
         this.$scope = $scope;
-        this.moment = moment;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.$state = $state;
         this.$window = $window;
 
@@ -90,6 +92,8 @@ export class SystemDashboardController {
         );
         this.$scope.$on('$destroy', this.destroy.bind(this));
     }
+
+    $onInit() {}
 
     engineRestart() {
         this.ConfirmService.show(
@@ -160,7 +164,7 @@ export class SystemDashboardController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/system/backup.sp.modal.html',
+            template: require('./backup.sp.modal.tpl'),
             controller: DashboardSetBackupPasswordController,
             controllerAs: 'vm',
             bindToController: true,
@@ -178,7 +182,7 @@ export class SystemDashboardController {
                     }
 
                     this.$modal.open({
-                        templateUrl: 'app/system/backup.download.modal.html',
+                        template: require('./backup.download.modal.tpl'),
                         controller: DashboardDownloadBackupController,
                         controllerAs: 'vm',
                         bindToController: true,
@@ -209,7 +213,7 @@ export class SystemDashboardController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/system/restorebackup.modal.html',
+            template: require('./restorebackup.modal.tpl'),
             controller: DashboardRestoreBackupController,
             controllerAs: 'vm',
             bindToController: true,
@@ -296,7 +300,7 @@ export class SystemDashboardController {
 
                 for (p in vm.supervisor.processes) {
                     if (vm.supervisor.processes[p].start) {
-                        vm.supervisor.processes[p].start = vm.moment.unix(vm.supervisor.processes[p].start).fromNow().toUpperCase();
+                        vm.supervisor.processes[p].start = moment.unix(vm.supervisor.processes[p].start).fromNow().toUpperCase();
                     }
                 }
             },
@@ -316,8 +320,8 @@ class DashboardSetBackupPasswordController {
     password2: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance) {
+        this.$modalInstance = $uibModalInstance;
     }
 
     valid(): boolean {
@@ -356,9 +360,9 @@ class DashboardDownloadBackupController {
     backup_id: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 jobid: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.backup_id = jobid;
     }
 
@@ -391,11 +395,11 @@ class DashboardRestoreBackupController {
     contentSelected: boolean = true;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 MinemeldStatusService: IMinemeldStatusService,
                 FileUploader: any,
                 toastr: any) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.MinemeldStatusService = MinemeldStatusService;
         this.toastr = toastr;
 

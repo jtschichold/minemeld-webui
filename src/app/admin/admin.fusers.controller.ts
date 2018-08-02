@@ -1,12 +1,14 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMinemeldAAAService, IMinemeldAAAUsers, IMinemeldAAAUserAttributes } from '../../app/services/aaa';
 import { AdminConfigureCommentController, AdminAddUserController, AdminConfigureTagsController } from './modals.controller';
 import { IConfirmService } from '../../app/services/confirm';
 
-declare var he: any;
+import * as angular from 'angular';
 
-export class AdminFUsersController {
+const commentModalTemplate = require<string>('./admin.comment.modal.tpl');
+const tagsModalTemplate = require<string>('./admin.tags.modal.tpl');
+const addModalTemplate = require<string>('./admin.add.modal.tpl');
+
+export class AdminFUsersController  implements angular.IController {
     toastr: any;
     $scope: angular.IScope;
     DTOptionsBuilder: any;
@@ -16,6 +18,7 @@ export class AdminFUsersController {
     ConfirmService: IConfirmService;
     MinemeldAAAService: IMinemeldAAAService;
     $timeout: angular.ITimeoutService;
+    $sce: angular.ISCEService;
 
     dtUsers: any = {};
     dtColumns: any[];
@@ -28,7 +31,8 @@ export class AdminFUsersController {
     constructor(toastr: any, MinemeldAAAService: IMinemeldAAAService,
                 $scope: angular.IScope, DTOptionsBuilder: any,
                 DTColumnBuilder: any, $compile: angular.ICompileService,
-                $modal: angular.ui.bootstrap.IModalService,
+                $uibModal: angular.ui.bootstrap.IModalService,
+                $sce: angular.ISCEService,
                 ConfirmService: IConfirmService, $timeout: angular.ITimeoutService) {
         this.MinemeldAAAService = MinemeldAAAService;
         this.$scope = $scope;
@@ -36,12 +40,15 @@ export class AdminFUsersController {
         this.DTColumnBuilder = DTColumnBuilder;
         this.DTOptionsBuilder = DTOptionsBuilder;
         this.$compile = $compile;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.ConfirmService = ConfirmService;
         this.$timeout = $timeout;
+        this.$sce = $sce;
 
         this.setupUsersTable();
     }
+
+    $onInit() {}
 
     reload(): void {
         this.dtUsers.reloadData();
@@ -79,7 +86,7 @@ export class AdminFUsersController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/admin/admin.comment.modal.html',
+            template: commentModalTemplate,
             controller: AdminConfigureCommentController,
             controllerAs: 'vm',
             bindToController: true,
@@ -127,7 +134,7 @@ export class AdminFUsersController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/admin/admin.tags.modal.html',
+            template: tagsModalTemplate,
             controller: AdminConfigureTagsController,
             controllerAs: 'vm',
             bindToController: true,
@@ -173,7 +180,7 @@ export class AdminFUsersController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/admin/admin.add.modal.html',
+            template: addModalTemplate,
             controller: AdminAddUserController,
             controllerAs: 'vm',
             bindToController: true,
@@ -212,7 +219,7 @@ export class AdminFUsersController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/admin/admin.add.modal.html',
+            template: addModalTemplate,
             controller: AdminAddUserController,
             controllerAs: 'vm',
             bindToController: true,
@@ -314,7 +321,7 @@ export class AdminFUsersController {
             fc.setAttribute('tooltip-append-to-body', '1');
             fc.className += ' config-table-clickable';
 
-            vm.$compile(angular.element(row).contents())(vm.$scope);
+            vm.$compile(<any>(angular.element(row).contents()))(vm.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -327,7 +334,7 @@ export class AdminFUsersController {
         this.dtColumns = [
             this.DTColumnBuilder.newColumn('username').withTitle('USERNAME').withOption('width', '15%').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -340,7 +347,7 @@ export class AdminFUsersController {
 
                 if (data && data.tags) {
                     angular.forEach(data.tags, (tag: string) => {
-                        result.push('<span class="label tag-minemeld">' + he.encode(tag, { strict: true }) + '</span>');
+                        result.push('<span class="label tag-minemeld">' + vm.$sce.getTrustedHtml(tag) + '</span>');
                     });
 
                     return result.join(' ');
@@ -350,7 +357,7 @@ export class AdminFUsersController {
             }),
             this.DTColumnBuilder.newColumn('attributes').withTitle('COMMENT').withOption('defaultContent', ' ').renderWith(function(data: any, type: any, full: any) {
                 if (data && data.comment) {
-                    return he.encode(data.comment, { strict: true });
+                    return vm.$sce.getTrustedHtml(data.comment);
                 }
 
                 return '';

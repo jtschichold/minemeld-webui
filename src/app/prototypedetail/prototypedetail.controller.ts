@@ -1,9 +1,11 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldPrototypeService, IMinemeldPrototypeLibrary, IMinemeldPrototype } from '../../app/services/prototype';
 import { IConfirmService } from '../../app/services/confirm';
 
-export class PrototypedetailController {
+import './prototypedetail.style';
+
+export class PrototypedetailController  implements angular.IController {
     MinemeldPrototypeService: IMinemeldPrototypeService;
     $rootScope: any;
     $state: angular.ui.IStateService;
@@ -40,6 +42,8 @@ export class PrototypedetailController {
             toastr.error('ERROR RETRIEVING PROTOTYPES: ' + error.statusText);
         });
     }
+
+    $onInit() {}
 
     public delete() {
         this.ConfirmService.show(

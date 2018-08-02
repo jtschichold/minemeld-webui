@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldStatusService, IMinemeldStatusNode, IMinemeldStatus } from  '../../app/services/status';
 import { IThrottled, IThrottleService } from '../../app/services/throttle';
@@ -8,9 +8,8 @@ interface INGMinemeldStatusNode extends IMinemeldStatusNode {
     stateAsString: string;
 }
 
-export class NodeDetailInfoController {
+export class NodeDetailInfoController  implements angular.IController {
     mmstatus: IMinemeldStatusService;
-    moment: moment.MomentStatic;
     toastr: any;
     $interval: angular.IIntervalService;
     $scope: angular.IScope;
@@ -32,7 +31,7 @@ export class NodeDetailInfoController {
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService,
         $rootScope: angular.IRootScopeService,
@@ -40,7 +39,6 @@ export class NodeDetailInfoController {
         this.toastr = toastr;
         this.mmstatus = MinemeldStatusService;
         this.$interval = $interval;
-        this.moment = moment;
         this.$scope = $scope;
         this.$compile = $compile;
         this.$state = $state;
@@ -62,6 +60,8 @@ export class NodeDetailInfoController {
 
         this.$scope.$on('$destroy', this.destroy.bind(this));
     }
+
+    $onInit() {}
 
     public renderState(vm: any, ns: IMinemeldStatusNode) {
         vm.nodeState = ns;

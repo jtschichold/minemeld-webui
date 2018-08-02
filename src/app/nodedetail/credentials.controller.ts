@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
@@ -10,12 +10,12 @@ import { IThrottleService } from '../../app/services/throttle';
 function credentialsListConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.credentialsinfo', {
-            templateUrl: 'app/nodedetail/credentials.info.html',
+            template: require('./credentials.info.tpl'),
             controller: NodeDetailCredentialsInfoController,
             controllerAs: 'nodedetailinfo'
         })
         .state('nodedetail.phishmeinfo', {
-            templateUrl: 'app/nodedetail/credentials.info.html',
+            template: require('./credentials.info.tpl'),
             controller: NodeDetailCredentialsInfoController,
             controllerAs: 'nodedetailinfo',
             params: {
@@ -28,7 +28,7 @@ function credentialsListConfig($stateProvider: ng.ui.IStateProvider) {
             }
         })
         .state('nodedetail.auscertinfo', {
-            templateUrl: 'app/nodedetail/credentials.info.html',
+            template: require('./credentials.info.tpl'),
             controller: NodeDetailCredentialsInfoController,
             controllerAs: 'nodedetailinfo',
             params: {
@@ -44,7 +44,7 @@ function credentialsListConfig($stateProvider: ng.ui.IStateProvider) {
             }
         })
         .state('nodedetail.anomaliinfo', {
-            templateUrl: 'app/nodedetail/credentials.info.html',
+            template: require('./credentials.info.tpl'),
             controller: NodeDetailCredentialsInfoController,
             controllerAs: 'nodedetailinfo',
             params: {
@@ -57,7 +57,7 @@ function credentialsListConfig($stateProvider: ng.ui.IStateProvider) {
             }
         })
         .state('nodedetail.vtinfo', {
-            templateUrl: 'app/nodedetail/credentials.info.html',
+            template: require('./credentials.info.tpl'),
             controller: NodeDetailCredentialsInfoController,
             controllerAs: 'nodedetailinfo',
             params: {
@@ -73,7 +73,7 @@ function credentialsListConfig($stateProvider: ng.ui.IStateProvider) {
             }
         })
         .state('nodedetail.tmtinfo', {
-            templateUrl: 'app/nodedetail/credentials.info.html',
+            template: require('./credentials.info.tpl'),
             controller: NodeDetailCredentialsInfoController,
             controllerAs: 'nodedetailinfo',
             params: {
@@ -89,7 +89,7 @@ function credentialsListConfig($stateProvider: ng.ui.IStateProvider) {
             }
         })
         .state('nodedetail.threatconnectinfo', {
-            templateUrl: 'app/nodedetail/credentials.info.html',
+            template: require('./credentials.info.tpl'),
             controller: NodeDetailCredentialsInfoController,
             controllerAs: 'nodedetailinfo',
             params: {
@@ -295,19 +295,19 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService) {
         super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
+            toastr, $interval, MinemeldStatusService, $scope,
             $compile, $state, $stateParams, $rootScope, ThrottleService
         );
 
         this.MinemeldConfigService = MinemeldConfigService;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
 
         if (typeof($stateParams['usernameField']) !== 'undefined') {
             this.usernameField = $stateParams['usernameField'];
@@ -355,7 +355,7 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/credentials.sp.modal.html',
+            template: require('./credentials.sp.modal.tpl'),
             controller: CredentialsSetPasswordController,
             controllerAs: 'vm',
             bindToController: true,
@@ -386,7 +386,7 @@ export class NodeDetailCredentialsInfoController extends NodeDetailInfoControlle
         }
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/credentials.su.modal.html',
+            template: require('./credentials.su.modal.tpl'),
             controller: CredentialsSetUsernameController,
             controllerAs: 'vm',
             bindToController: true,
@@ -454,9 +454,9 @@ class CredentialsSetPasswordController {
     password2: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 secretName: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.secretName = secretName;
     }
 
@@ -497,8 +497,8 @@ class CredentialsSetUsernameController {
     usernameName: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance, username: string, usernameName: string) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance, username: string, usernameName: string) {
+        this.$modalInstance = $uibModalInstance;
         this.username = username;
         this.usernameName = usernameName;
     }

@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMinemeldStatusService, IMinemeldStatus } from  '../../app/services/status';
 
 export interface INodeDetailResolverService {

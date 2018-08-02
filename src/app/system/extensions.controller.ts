@@ -1,17 +1,15 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMineMeldExtensionsService, IMineMeldExtension } from '../services/extensions';
 import { IMineMeldJobsService } from '../services/jobs';
 import { IMinemeldPrototypeService } from '../services/prototype';
 import { IConfirmService } from '../services/confirm';
 
-declare var he: any;
-
 export interface IMineMeldExtensionTagged extends IMineMeldExtension {
     tags: string[];
 }
 
-export class SystemExtensionsController {
+export class SystemExtensionsController  implements angular.IController {
     MineMeldExtensionsService: IMineMeldExtensionsService;
     MineMeldJobsService: IMineMeldJobsService;
     MinemeldPrototypeService: IMinemeldPrototypeService;
@@ -35,9 +33,10 @@ export class SystemExtensionsController {
         MineMeldExtensionsService: IMineMeldExtensionsService,
         MinemeldPrototypeService: IMinemeldPrototypeService,
         ConfirmService: IConfirmService,
-        moment: moment.MomentStatic, $scope: angular.IScope, DTOptionsBuilder: any,
+        $scope: angular.IScope, DTOptionsBuilder: any,
         DTColumnBuilder: any, $compile: angular.ICompileService, $state: angular.ui.IStateService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
+        private $sce: angular.ISCEService,
         MineMeldJobsService: IMineMeldJobsService) {
         this.MineMeldExtensionsService = MineMeldExtensionsService;
         this.MinemeldPrototypeService = MinemeldPrototypeService;
@@ -49,12 +48,14 @@ export class SystemExtensionsController {
         this.MineMeldJobsService = MineMeldJobsService;
         this.$compile = $compile;
         this.$state = $state;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
 
         (<any>this.$scope.$parent).vm.tabs = [false, true];
 
         this.setupExtensionsTable();
     }
+
+    $onInit() {}
 
     reload(): void {
         this.dtExtensions.reloadData();
@@ -153,7 +154,7 @@ export class SystemExtensionsController {
             'Installing extensions from untrusted sources could harm the security of your network and compromise your data. Are you sure you want to continue ?'
         ).then((result: any) => {
             mi = this.$modal.open({
-                templateUrl: 'app/system/uploadextension.modal.html',
+                template: require('./uploadextension.modal.tpl'),
                 controller: UploadExtensionController,
                 controllerAs: 'vm',
                 bindToController: true,
@@ -175,7 +176,7 @@ export class SystemExtensionsController {
             'Installing extensions from untrusted sources could harm the security of your network and compromise your data. Are you sure you want to continue ?'
         ).then((result: any) => {
             mi = this.$modal.open({
-                templateUrl: 'app/system/installextensionfromgit.modal.html',
+                template: require('./installextensionfromgit.modal.tpl'),
                 controller: InstallExtensionGitController,
                 controllerAs: 'vm',
                 bindToController: true,
@@ -196,7 +197,7 @@ export class SystemExtensionsController {
         if (extension.tags.indexOf('prototypes') !== -1) {
             this.toastr.success('REFRESHING THE BROWSER TO UPDATE THE PROTOTYPE LIBRARY');
             this.MinemeldPrototypeService.invalidateCache();
-            this.$state.go(this.$state.$current, { reload: true });
+            this.$state.go(this.$state.current, { reload: true });
         }
     }
 
@@ -226,7 +227,7 @@ export class SystemExtensionsController {
                             toks = epgroupname.split('_', 2);
 
                             if (toks[0] === 'minemeld') {
-                                textension.tags.push(he.encode(toks[1], {strict: true}));
+                                textension.tags.push(vm.$sce.getTrustedHtml(toks[1]));
                             }
                         });
                     }
@@ -296,7 +297,7 @@ export class SystemExtensionsController {
                 }
             }
 
-            vm.$compile(angular.element(row).contents())(vm.$scope);
+            vm.$compile(<any>angular.element(row).contents())(vm.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -312,17 +313,17 @@ export class SystemExtensionsController {
                 var sname: string;
                 var aemail: string = 'no email provided';
 
-                sname = he.encode(data, { strict: true });
+                sname = vm.$sce.getTrustedHtml(data);
                 r = '<div class="extensions-name">';
                 r += sname;
                 r += '</div>';
 
                 if (full.author_email) {
-                    aemail = he.encode(full.author_email, { strict: true });
+                    aemail = vm.$sce.getTrustedHtml(full.author_email);
                 }
 
                 if (full.author) {
-                    r += '<div tooltip="' + he.encode(full.author_email, { strict: true}) + '" class="extensions-author">' + he.encode(full.author.toUpperCase(), { strict: true });
+                    r += '<div tooltip="' + vm.$sce.getTrustedHtml(full.author_email) + '" class="extensions-author">' + vm.$sce.getTrustedHtml(full.author.toUpperCase());
 
                     r += '</div>';
                 }
@@ -334,7 +335,7 @@ export class SystemExtensionsController {
                     return '';
                 }
 
-                return he.encode(data, { strict: true });
+                return vm.$sce.getTrustedHtml(data);
             }).withOption('width', '10%'),
             this.DTColumnBuilder.newColumn('description').withTitle('DESCRIPTION').notSortable().renderWith(function(data: any, type: any, full: IMineMeldExtensionTagged) {
                 var r: string;
@@ -343,18 +344,18 @@ export class SystemExtensionsController {
                     return '';
                 }
 
-                r = '<div class="m-b-xs">' + he.encode(data, { strict: true }) + '</div>';
+                r = '<div class="m-b-xs">' + vm.$sce.getTrustedHtml(data) + '</div>';
 
                 if (full.tags.indexOf('git') !== -1) {
                     r += '<div class="prototypes-author m-t-xs">PATH</div>';
-                    r += '<div class="m-b-xs">' + he.encode(full.path, { strict: true }) + '</div>';
+                    r += '<div class="m-b-xs">' + vm.$sce.getTrustedHtml(full.path) + '</div>';
                 }
 
                 if (full.tags.length > 0) {
                     r += '<div class="prototypes-author m-t-xs">TAGS</div>';
                     r += '<div class="label-container">';
                     angular.forEach(full.tags, (tag: string) => {
-                        r += '<span class="label tag-prototype">' + he.encode(tag) + '</span> ';
+                        r += '<span class="label tag-prototype">' + vm.$sce.getTrustedHtml(tag) + '</span> ';
                     });
                     r += '</div>';
                 }
@@ -400,10 +401,10 @@ export class UploadExtensionController {
     added: boolean = false;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 FileUploader: any,
                 toastr: any) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.uploader = new FileUploader({
             url: '/extensions',
             queueLimit: 1,
@@ -460,14 +461,14 @@ export class InstallExtensionGitController {
     progressPromise: any;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 MineMeldExtensionsService: IMineMeldExtensionsService,
                 MineMeldJobsService: IMineMeldJobsService,
                 toastr: any,
                 $interval: angular.IIntervalService) {
         this.MineMeldExtensionsService = MineMeldExtensionsService;
         this.MineMeldJobsService = MineMeldJobsService;
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.toastr = toastr;
         this.$interval = $interval;
     }

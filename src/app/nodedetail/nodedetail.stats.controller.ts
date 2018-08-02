@@ -1,4 +1,5 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
+import * as moment from 'moment';
 
 import { IMinemeldStatusService, IMinemeldStatus } from  '../../app/services/status';
 import { IMinemeldMetricsService } from '../../app/services/metrics';
@@ -20,10 +21,9 @@ interface IMetricsDictionary {
     [index: string]: IMetric[];
 }
 
-export class NodeDetailStatsController {
+export class NodeDetailStatsController  implements angular.IController {
     mmstatus: IMinemeldStatusService;
     mmmetrics: IMinemeldMetricsService;
-    moment: moment.MomentStatic;
     toastr: any;
     $interval: angular.IIntervalService;
     $scope: angular.IScope;
@@ -60,7 +60,7 @@ export class NodeDetailStatsController {
                 tickFormat: (d: any, i: any) => { return Math.ceil(d); }
             },
             xAxis: {
-                tickFormat: (d: any, i: any) => { return this.moment.unix(d).fromNow().toUpperCase(); }
+                tickFormat: (d: any, i: any) => { return moment.unix(d).fromNow().toUpperCase(); }
             },
             forceY: [0, 1],
             showLegend: false,
@@ -83,7 +83,7 @@ export class NodeDetailStatsController {
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
         MinemeldMetricsService: IMinemeldMetricsService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService,
         $rootScope: angular.IRootScopeService,
@@ -92,7 +92,6 @@ export class NodeDetailStatsController {
         this.mmstatus = MinemeldStatusService;
         this.mmmetrics = MinemeldMetricsService;
         this.$interval = $interval;
-        this.moment = moment;
         this.$scope = $scope;
         this.$compile = $compile;
         this.$state = $state;
@@ -113,6 +112,8 @@ export class NodeDetailStatsController {
 
         this.$scope.$on('$destroy', this.destroy.bind(this));
     }
+
+    $onInit() {}
 
     renderMetrics(vm: NodeDetailStatsController, result: any) {
         var j: number;

@@ -1,9 +1,9 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldStatusService } from  '../../app/services/status';
 import { IMinemeldConfigService } from '../../app/services/config';
 
-export class IndicatorAddController {
+export class IndicatorAddController  implements angular.IController {
     toastr: any;
     $scope: angular.IScope;
     MinemeldStatusService: IMinemeldStatusService;
@@ -93,6 +93,8 @@ export class IndicatorAddController {
             this.toastr.error('ERROR RETRIEVING MINEMELD RUNNING CONFIG: ' + error.statusText);
         });
     }
+
+    $onInit() {}
 
     typeSelected(item: number, model: any) {
         var newnodes: string[];

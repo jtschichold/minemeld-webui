@@ -1,0 +1,104 @@
+@import 'sass/index';
+
+.config-none {
+    font-style: italic;
+    color: $gray-light;
+}
+
+.config-table-icon {
+    color: darken($body-bg, 80%);
+}
+
+.config-action {
+    float: right;
+    margin-left: 5px;
+}
+
+.btn-config-action {
+  @include button-variant(darken($body-bg, 80%), $body-bg, $body-bg);
+}
+
+.config-btn-disabled {
+  @include button-variant($label-color, $label-default-bg, $label-default-bg);
+}
+
+.config-btn-enabled {
+  @include button-variant($label-color, $label-success-bg, $label-success-bg);
+}
+
+.config-btn-enabled.btn-xs, .config-btn-disabled.btn-xs {
+  width: 68px;
+}
+
+.config-btn-enabled.btn-sm, .config-btn-disabled.btn-sm {
+  width: 78px;
+}
+
+#configTable_info {
+  display: none;
+}
+
+.config-table-row > td {
+    font-weight: 500;
+    font-size: 12px;
+    background-color: #FFF;
+}
+
+.config-table-row:hover > td {
+    background-color: darken($body-bg, 5%);
+}
+
+.config-table-clickable:hover {
+    background-color: darken($body-bg, 10%) !important;
+}
+
+.config-table-disabled {
+    cursor: default !important;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnPgogIDxyZWN0IHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9J3doaXRlJyBmaWxsLW9wYWNpdHk9IjAuMCIvPgogIDxwYXRoIGQ9J00wIDVMNSAwWk02IDRMNCA2Wk0tMSAxTDEgLTFaJyBzdHJva2U9JyNkZGQnIHN0cm9rZS13aWR0aD0nMScvPgo8L3N2Zz4K");
+    background-repeat: repeat;
+}
+
+.config-inputs-table > tbody {
+    border-top: 2px solid $table-border-color;
+    border-bottom: 1px solid $table-border-color;
+}
+
+.config-inputs-table > tbody > tr:hover {
+    background-color: darken($body-bg, 5%);
+}
+
+.config-add-form label {
+  font-weight: 500 !important;
+}
+
+#configTable ul {
+    padding: 0;
+}
+
+#configTable ul > li {
+    list-style-type: none;
+    padding-bottom: 5px;
+    vertical-align: middle;
+}
+
+#configTable ul > li > span {
+    vertical-align: middle;
+    margin-top: -2px;
+}
+
+#configTable_wrapper label {
+    font-size: 12px;
+}
+
+#configTable_info {
+    font-size: 12px;
+}
+
+#configTable_paginate {
+    font-size: 12px;
+}
+
+#configTable th {
+    font-weight: 500;
+    font-size: 12px;
+}

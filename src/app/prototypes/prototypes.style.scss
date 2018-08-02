@@ -1,0 +1,36 @@
+@import 'sass/index';
+
+.prototypes-table-chevron {
+    color: #FFF;
+    font-size: 30px;
+}
+
+.prototypes-chevron-td {
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+.prototypes-author {
+    color: darken($body-bg, 30%);
+    font-size: 9px;
+    font-weight: bold;
+}
+
+.prototypes-label-community {
+    background-color: $panw-blue;
+}
+
+.prototypes-label-minemeld {
+    background-color: #b6d551;
+}
+
+.prototypes-label-unk {
+    background-color: $minemeld-system;
+}
+
+.prototypes-name {
+    white-space: nowrap;
+    max-width: 300px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}

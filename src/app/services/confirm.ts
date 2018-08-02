@@ -1,23 +1,23 @@
-/// <reference path="../../../typings/main.d.ts" />
+let template = require<string>('./confirm.tpl');
 
 export interface IConfirmService {
     show(title: string, msg: string): angular.IPromise<any>;
 }
 
 export class ConfirmService implements IConfirmService {
-    static $inject = ['$modal'];
+    static $inject = ['$uibModal'];
 
     $modal: angular.ui.bootstrap.IModalService;
 
-    constructor($modal: angular.ui.bootstrap.IModalService) {
-        this.$modal = $modal;
+    constructor($uibModal: angular.ui.bootstrap.IModalService) {
+        this.$modal = $uibModal;
     }
 
     show(title: string, msg: string): angular.IPromise<any> {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/services/confirm.html',
+            template: template,
             controller: ConfirmController,
             controllerAs: 'vm',
             bindToController: true,
@@ -39,10 +39,10 @@ class ConfirmController {
     msg: string;
 
     /* @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 title: string,
                 msg: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.title = title;
         this.msg = msg;
     }

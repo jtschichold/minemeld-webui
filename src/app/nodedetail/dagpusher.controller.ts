@@ -1,21 +1,19 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
 import { IConfirmService } from '../../app/services/confirm';
 
-declare var he: any;
-
 /** @ngInject */
 function dagPusherRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.dagpusherinfo', {
-            templateUrl: 'app/nodedetail/dagpusher.info.html',
+            template: require('./dagpusher.info.tpl'),
             controller: 'NodeDetailInfoController',
             controllerAs: 'vm'
         })
         .state('nodedetail.dagpusherdevices', {
-            templateUrl: 'app/nodedetail/dagpusher.devices.html',
+            template: require('./dagpusher.devices.tpl'),
             controller: 'NodeDetailDagPusherDevicesController',
             controllerAs: 'vm'
         })
@@ -52,7 +50,7 @@ function dagPusherRegisterClass(NodeDetailResolver: INodeDetailResolverService) 
     });
 }
 
-class NodeDetailDagPusherDevicesController {
+class NodeDetailDagPusherDevicesController  implements angular.IController {
     MinemeldConfigService: IMinemeldConfigService;
     toastr: any;
     $scope: angular.IScope;
@@ -76,15 +74,16 @@ class NodeDetailDagPusherDevicesController {
     constructor(toastr: any, MinemeldConfigService: IMinemeldConfigService,
                 $scope: angular.IScope, DTOptionsBuilder: any,
                 DTColumnBuilder: any, $compile: angular.ICompileService,
-                $modal: angular.ui.bootstrap.IModalService,
-                ConfirmService: IConfirmService) {
+                $uibModal: angular.ui.bootstrap.IModalService,
+                ConfirmService: IConfirmService,
+                private $sce: angular.ISCEService) {
         this.MinemeldConfigService = MinemeldConfigService;
         this.$scope = $scope;
         this.toastr = toastr;
         this.DTColumnBuilder = DTColumnBuilder;
         this.DTOptionsBuilder = DTOptionsBuilder;
         this.$compile = $compile;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.ConfirmService = ConfirmService;
 
         this.nodename = $scope.$parent['nodedetail']['nodename'];
@@ -94,11 +93,13 @@ class NodeDetailDagPusherDevicesController {
         this.setupDeviceTable();
     }
 
+    $onInit() {}
+
     addDevice(): void {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/dagpusher.add.modal.html',
+            template: require('./dagpusher.add.modal.tpl'),
             controller: DagPusherAddDeviceController,
             controllerAs: 'vm',
             bindToController: true,
@@ -144,7 +145,7 @@ class NodeDetailDagPusherDevicesController {
     }
 
     private setupDeviceTable(): void {
-        var vm: any = this;
+        var vm: NodeDetailDagPusherDevicesController = this;
 
         this.dtOptions = this.DTOptionsBuilder.fromFnPromise(function() {
             return vm.MinemeldConfigService.getDataFile(vm.cfd_device_list).then((result: any) => {
@@ -184,7 +185,7 @@ class NodeDetailDagPusherDevicesController {
             fc.setAttribute('tooltip-popup-delay', '500');
             fc.className += ' config-table-clickable';
 
-            vm.$compile(angular.element(row).contents())(vm.$scope);
+            vm.$compile(<any>angular.element(row).contents())(vm.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -196,10 +197,10 @@ class NodeDetailDagPusherDevicesController {
 
         this.dtColumns = [
             this.DTColumnBuilder.newColumn('name').withTitle('NAME').renderWith(function(data: any, type: any, full: any) {
-                return he.encode(data, { strict: true });
+                return vm.$sce.getTrustedHtml(data);
             }),
             this.DTColumnBuilder.newColumn('api_username').withTitle('USERNAME').renderWith(function(data: any, type: any, full: any) {
-                return he.encode(data, { strict: true });
+                return vm.$sce.getTrustedHtml(data);
             }),
             this.DTColumnBuilder.newColumn('api_password').withTitle('PASSWORD').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
@@ -209,18 +210,18 @@ class NodeDetailDagPusherDevicesController {
                 return '';
             }),
             this.DTColumnBuilder.newColumn('hostname').withTitle('HOSTNAME').renderWith(function(data: any, type: any, full: any) {
-                return he.encode(data, { strict: true });
+                return vm.$sce.getTrustedHtml(data);
             }),
             this.DTColumnBuilder.newColumn('vsys').withTitle('VSYS').withOption('defaultContent', '').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
             }),
             this.DTColumnBuilder.newColumn('serial').withTitle('SERIAL #').withOption('defaultContent', '').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -269,8 +270,8 @@ class DagPusherAddDeviceController {
     }
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance) {
+        this.$modalInstance = $uibModalInstance;
     }
 
     save() {

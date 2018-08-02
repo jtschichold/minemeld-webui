@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
@@ -10,7 +10,7 @@ import { IThrottleService } from '../../app/services/throttle';
 function recordedFutureRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.recordedfutureinfo', {
-            templateUrl: 'app/nodedetail/recordedfuture.info.html',
+            template: require('./recordedfuture.info.tpl'),
             controller: NodeDetailRecordedFutureInfoController,
             controllerAs: 'nodedetailinfo'
         })
@@ -69,19 +69,19 @@ class NodeDetailRecordedFutureInfoController extends NodeDetailInfoController {
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService) {
-        this.MinemeldConfigService = MinemeldConfigService;
-        this.$modal = $modal;
-
         super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
+            toastr, $interval, MinemeldStatusService, $scope,
             $compile, $state, $stateParams, $rootScope, ThrottleService
         );
+
+        this.MinemeldConfigService = MinemeldConfigService;
+        this.$modal = $uibModal;
 
         this.loadToken();
     }
@@ -104,7 +104,7 @@ class NodeDetailRecordedFutureInfoController extends NodeDetailInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/recordedfuture.st.modal.html',
+            template: require('./recordedfuture.st.modal.tpl'),
             controller: RecorededFutureSetTokenController,
             controllerAs: 'vm',
             bindToController: true,
@@ -152,8 +152,8 @@ class RecorededFutureSetTokenController {
     }
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance) {
+        this.$modalInstance = $uibModalInstance;
     }
 
     save() {

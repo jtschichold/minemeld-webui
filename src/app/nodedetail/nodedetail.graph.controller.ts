@@ -1,13 +1,12 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldStatusService, IMinemeldStatusNode, IMinemeldStatus } from  '../../app/services/status';
 import { IMineMeldRunningConfigStatusService, IMineMeldRunningConfigStatus, IMinemeldResolvedConfigNode } from '../../app/services/runningconfigstatus';
 import { IThrottled, IThrottleService } from '../../app/services/throttle';
 
-export class NodeDetailGraphController {
+export class NodeDetailGraphController  implements angular.IController {
     mmstatus: IMinemeldStatusService;
     MineMeldRunningConfigStatusService: IMineMeldRunningConfigStatusService;
-    moment: moment.MomentStatic;
     toastr: any;
     $interval: angular.IIntervalService;
     $scope: angular.IScope;
@@ -27,7 +26,7 @@ export class NodeDetailGraphController {
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
         MineMeldRunningConfigStatusService: IMineMeldRunningConfigStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService,
         $rootScope: angular.IRootScopeService,
@@ -36,7 +35,6 @@ export class NodeDetailGraphController {
         this.mmstatus = MinemeldStatusService;
         this.MineMeldRunningConfigStatusService = MineMeldRunningConfigStatusService;
         this.$interval = $interval;
-        this.moment = moment;
         this.$scope = $scope;
         this.$compile = $compile;
         this.$state = $state;
@@ -61,6 +59,8 @@ export class NodeDetailGraphController {
 
         this.$scope.$on('$destroy', this.destroy.bind(this));
     }
+
+    $onInit() {}
 
     private updateMinemeldStatus() {
         var k: number;

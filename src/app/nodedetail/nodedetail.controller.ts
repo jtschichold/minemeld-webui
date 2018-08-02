@@ -1,8 +1,11 @@
+import * as angular from 'angular';
+
 import { IMinemeldStatusService } from  '../../app/services/status';
 import { INodeDetailResolverService, INodeDetailTab, INodeDetailClass } from '../../app/services/nodedetailresolver';
 
-/** @ngInject */
-export class NodeDetailController {
+import './nodedetail.style';
+
+export class NodeDetailController  implements angular.IController {
     $state: angular.ui.IStateService;
     toastr: any;
 
@@ -10,6 +13,7 @@ export class NodeDetailController {
 
     tabs: INodeDetailTab[];
 
+    /** @ngInject */
     constructor($stateParams: angular.ui.IStateParamsService,
                 $state: angular.ui.IStateService,
                 MinemeldStatusService: IMinemeldStatusService,
@@ -35,6 +39,8 @@ export class NodeDetailController {
             this.toastr.error('ERROR RESOLVING NODE ' + this.nodename + ': ' + error.status);
         });
     }
+
+    $onInit() {}
 
     public select(state: string) {
         this.$state.go(state, { nodename: this.nodename });

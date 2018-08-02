@@ -1,7 +1,8 @@
-/// <reference path="../../../../typings/main.d.ts" />
-
 import { IMineMeldAPIService } from '../../services/minemeldapi';
 import { MinemeldStatusService } from '../../services/status';
+
+import './suggestion.style';
+const template = require<string>('./suggestion.tpl');
 
 /** @ngInject */
 export function suggestion(): ng.IDirective {
@@ -10,15 +11,16 @@ export function suggestion(): ng.IDirective {
         scope: {
             creationDate: '='
         },
-        templateUrl: 'app/components/suggestion/suggestion.html',
+        template: template,
         controller: SuggestionController,
         controllerAs: 'vm',
         bindToController: true
     };
 }
 
-/** @ngInject */
-class SuggestionController {
+let modalTemplate = require<string>('./suggestion.modal.tpl');
+
+class SuggestionController  implements angular.IController {
     MineMeldAPIService: IMineMeldAPIService;
     MineMeldStatusService: MinemeldStatusService;
 
@@ -26,10 +28,11 @@ class SuggestionController {
     disabled: boolean = false;
     snsAvailable: boolean = false;
 
+    /** @ngInject */
     constructor(MineMeldAPIService: IMineMeldAPIService,
         MinemeldStatusService: MinemeldStatusService,
         private toastr: any,
-        private $modal: angular.ui.bootstrap.IModalService) {
+        private $uibModal: angular.ui.bootstrap.IModalService) {
         this.MineMeldAPIService = MineMeldAPIService;
         this.MineMeldStatusService = MinemeldStatusService;
 
@@ -40,13 +43,15 @@ class SuggestionController {
         }
     }
 
+    $onInit() {}
+
     showModal(): void {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         this.minimized = false;
 
-        mi = this.$modal.open({
-            templateUrl: 'app/components/suggestion/suggestion.modal.html',
+        mi = this.$uibModal.open({
+            template: modalTemplate,
             controller: SuggestionModalController,
             controllerAs: 'vm',
             bindToController: true,
@@ -85,23 +90,23 @@ class SuggestionController {
     }
 }
 
-/** @ngInject */
 class SuggestionModalController {
     email: string = null;
     suggestion: string = null;
 
-    constructor(private $modalInstance: angular.ui.bootstrap.IModalServiceInstance) { }
+    /** @ngInject */
+    constructor(private $uibModalInstance: angular.ui.bootstrap.IModalInstanceService) { }
 
     valid(): boolean {
         return (this.email && this.email.length !== 0) && (this.suggestion && this.suggestion.length !== 0);
     }
 
     cancel() {
-        this.$modalInstance.dismiss();
+        this.$uibModalInstance.dismiss();
     }
 
     submit() {
-        this.$modalInstance.close({
+        this.$uibModalInstance.close({
             email: this.email,
             suggestion: this.suggestion
         });

@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMineMeldAPIService, IMineMeldAPIResource } from './minemeldapi';
 
 export interface IMineMeldJob {
@@ -85,7 +83,7 @@ export class MineMeldJobsService implements IMineMeldJobsService {
     }
 
     private destroyJobsMonitor(): void {
-        angular.forEach(this.monitors, (monitor: IMineMeldJobMonitor) => {
+        this.monitors.forEach((monitor: IMineMeldJobMonitor) => {
             this.$interval.cancel(monitor.monitor);
         });
         this.monitors = [];

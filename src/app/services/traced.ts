@@ -1,7 +1,7 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMineMeldAPIService, IMineMeldAPIResource } from './minemeldapi';
 import { IMinemeldEventsService } from './events';
+
+import { forEach } from 'angular';
 
 export interface IMinemeldTracedQueryOptions {
     query?: string;
@@ -64,7 +64,7 @@ export class MinemeldTracedService implements IMinemeldTracedService {
     }
 
     closeAll(): void {
-        angular.forEach(this.queries, (query: IMinemeldTracedQueryOptionsInt, qid: string) => {
+        forEach(this.queries, (query: IMinemeldTracedQueryOptionsInt, qid: string) => {
             this.killQuery(qid);
             this.MinemeldEventsService.unsubscribe(query.subscriptionID);
         });

@@ -1,11 +1,9 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
 import { IConfirmService } from '../../app/services/confirm';
 import { YamlConfigureCommentController, YamlConfigureShareLevelController } from './yamlmodals.controller';
-
-declare var he: any;
 
 class NodeDetailYamlURLIndicatorsController {
     MinemeldConfigService: IMinemeldConfigService;
@@ -31,7 +29,8 @@ class NodeDetailYamlURLIndicatorsController {
     constructor(toastr: any, MinemeldConfigService: IMinemeldConfigService,
                 $scope: angular.IScope, DTOptionsBuilder: any,
                 DTColumnBuilder: any, $compile: angular.ICompileService,
-                $modal: angular.ui.bootstrap.IModalService,
+                $uibModal: angular.ui.bootstrap.IModalService,
+                private $sce: angular.ISCEService,
                 ConfirmService: IConfirmService) {
         this.MinemeldConfigService = MinemeldConfigService;
         this.$scope = $scope;
@@ -39,7 +38,7 @@ class NodeDetailYamlURLIndicatorsController {
         this.DTColumnBuilder = DTColumnBuilder;
         this.DTOptionsBuilder = DTOptionsBuilder;
         this.$compile = $compile;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.ConfirmService = ConfirmService;
         this.nodename = $scope.$parent['nodedetail']['nodename'];
         this.cfd_indicators = this.nodename + '_indicators';
@@ -50,7 +49,7 @@ class NodeDetailYamlURLIndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/yamlurl.add.modal.html',
+            template: require('./yamlurl.add.modal.tpl'),
             controller: YamlURLAddIndicatorController,
             controllerAs: 'vm',
             bindToController: true,
@@ -95,7 +94,7 @@ class NodeDetailYamlURLIndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/yaml.sharelevel.modal.html',
+            template: require('./yaml.sharelevel.modal.tpl'),
             controller: YamlConfigureShareLevelController,
             controllerAs: 'vm',
             bindToController: true,
@@ -134,7 +133,7 @@ class NodeDetailYamlURLIndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/yaml.comment.modal.html',
+            template: require('./yaml.comment.modal.tpl'),
             controller: YamlConfigureCommentController,
             controllerAs: 'vm',
             bindToController: true,
@@ -220,7 +219,7 @@ class NodeDetailYamlURLIndicatorsController {
             fc.setAttribute('tooltip-popup-delay', '500');
             fc.className += ' config-table-clickable';
 
-            vm.$compile(angular.element(row).contents())(vm.$scope);
+            vm.$compile(<any>angular.element(row).contents())(vm.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -233,7 +232,7 @@ class NodeDetailYamlURLIndicatorsController {
         this.dtColumns = [
             this.DTColumnBuilder.newColumn('indicator').withTitle('INDICATOR').withOption('width', '50%').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -260,7 +259,7 @@ class NodeDetailYamlURLIndicatorsController {
             }),
             this.DTColumnBuilder.newColumn('comment').withTitle('COMMENT').withOption('defaultContent', ' ').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -295,8 +294,8 @@ class YamlURLAddIndicatorController {
     ];
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance) {
+        this.$modalInstance = $uibModalInstance;
     }
 
     save() {
@@ -340,7 +339,7 @@ class YamlURLAddIndicatorController {
 function yamlURLRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.yamlurlindicators', {
-            templateUrl: 'app/nodedetail/yamlurl.indicators.html',
+            template: require('./yamlurl.indicators.tpl'),
             controller: NodeDetailYamlURLIndicatorsController,
             controllerAs: 'vm'
         })

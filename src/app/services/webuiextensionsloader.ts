@@ -1,7 +1,7 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMineMeldExtensionsService, IMineMeldExtension } from './extensions';
 import { IMineMeldAPIService } from './minemeldapi';
+
+import { forEach } from 'angular';
 
 export interface IMineMeldWebUIExtensionsLoaderService {
 }
@@ -32,7 +32,7 @@ export class MineMeldWebUIExtensionsLoaderService implements IMineMeldWebUIExten
         this.MineMeldExtensionService.list(false).then((extensions: IMineMeldExtension[]) => {
             var webuiExtensions: string[] = [];
 
-            angular.forEach(extensions, (extension: IMineMeldExtension) => {
+            extensions.forEach((extension: IMineMeldExtension) => {
                 if (!extension.entry_points) {
                     return;
                 }
@@ -41,12 +41,12 @@ export class MineMeldWebUIExtensionsLoaderService implements IMineMeldWebUIExten
                     return;
                 }
 
-                angular.forEach((<Object>extension.entry_points['minemeld_webui']), (value: any, key: string) => {
+                forEach((<Object>extension.entry_points['minemeld_webui']), (value: any, key: string) => {
                     webuiExtensions.push(key);
                 });
             });
 
-            angular.forEach(webuiExtensions, (extname: string) => {
+            webuiExtensions.forEach((extname: string) => {
                 this.$ocLazyLoad.load('/extensions/webui/' + extname + '/extension.js', { cache: false }).then(() => {
                     console.log('Loaded ' + extname + ' extension');
                 });

@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
@@ -11,7 +11,7 @@ import { IConfirmService } from '../../app/services/confirm';
 function autofocusExportListConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.autofocuselinfo', {
-            templateUrl: 'app/nodedetail/autofocusel.info.html',
+            template: require<string>('./autofocusel.info.tpl'),
             controller: NodeDetailAutofocusELInfoController,
             controllerAs: 'nodedetailinfo'
         })
@@ -52,21 +52,21 @@ class NodeDetailAutofocusELInfoController extends NodeDetailInfoController {
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService,
         ConfirmService: IConfirmService) {
-        this.MinemeldConfigService = MinemeldConfigService;
-        this.ConfirmService = ConfirmService;
-        this.$modal = $modal;
-
         super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
+            toastr, $interval, MinemeldStatusService, $scope,
             $compile, $state, $stateParams, $rootScope, ThrottleService
         );
+
+        this.MinemeldConfigService = MinemeldConfigService;
+        this.ConfirmService = ConfirmService;
+        this.$modal = $uibModal;
 
         this.loadSideConfig();
     }
@@ -135,7 +135,7 @@ class NodeDetailAutofocusELInfoController extends NodeDetailInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/autofocus.sak.modal.html',
+            template: require('./autofocus.sak.modal.tpl'),
             controller: AutofocusSetAPIKeyController,
             controllerAs: 'vm',
             bindToController: true,
@@ -158,7 +158,7 @@ class NodeDetailAutofocusELInfoController extends NodeDetailInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/autofocus.sl.modal.html',
+            template: require('./autofocus.sl.modal.tpl'),
             controller: AutofocusSetLabelController,
             controllerAs: 'vm',
             bindToController: true,
@@ -205,8 +205,8 @@ class AutofocusSetAPIKeyController {
     }
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance) {
+        this.$modalInstance = $uibModalInstance;
     }
 
     save() {
@@ -236,8 +236,8 @@ class AutofocusSetLabelController {
     }
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance, label: string) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance, label: string) {
+        this.$modalInstance = $uibModalInstance;
         this.label = label;
     }
 

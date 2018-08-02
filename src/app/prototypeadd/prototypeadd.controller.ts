@@ -1,10 +1,12 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldPrototypeService, IMinemeldPrototypeLibrary, IMinemeldPrototype, IMinemeldPrototypeMetadata } from '../../app/services/prototype';
 
-declare var jsyaml: any;
+const jsyaml: any = require('js-yaml');
 
-export class PrototypeAddController {
+import './prototypeadd.style';
+
+export class PrototypeAddController  implements angular.IController {
     MinemeldPrototypeService: IMinemeldPrototypeService;
     $state: angular.ui.IStateService;
     $rootScope: any;
@@ -89,6 +91,8 @@ export class PrototypeAddController {
             toastr.error('ERROR RETRIEVING PROTOTYPE ' + this.prototype + ': ' + error.statusText);
         });
     }
+
+    $onInit() {}
 
     editorLoaded(editor_: any): void {
         editor_.setShowInvisibles(false);

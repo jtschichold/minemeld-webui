@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 interface IAdminTab {
     tooltip: string;
     icon: string;
@@ -7,8 +5,7 @@ interface IAdminTab {
     state: string;
 }
 
-/** @ngInject */
-export class AdminController {
+export class AdminController  implements angular.IController {
     $state: angular.ui.IStateService;
 
     tabs: IAdminTab[] = [
@@ -26,9 +23,12 @@ export class AdminController {
         }
     ];
 
+    /** @ngInject */
     constructor($state: angular.ui.IStateService) {
         this.$state = $state;
     }
+
+    $onInit() {}
 
     public select(state: string) {
         this.$state.go(state);

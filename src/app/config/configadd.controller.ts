@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldConfigService, IMinemeldCandidateConfigNode } from  '../../app/services/config';
 import { IMinemeldPrototypeService } from '../../app/services/prototype';
@@ -20,7 +20,7 @@ interface IInputNode {
     indicatorTypes: string[];
 }
 
-export class ConfigAddController {
+export class ConfigAddController  implements angular.IController {
     MinemeldPrototypeService: IMinemeldPrototypeService;
     MinemeldConfigService: IMinemeldConfigService;
     toastr: any;
@@ -124,6 +124,8 @@ export class ConfigAddController {
             this.toastr.error('ERROR RETRIEVING CONFIG: ' + error.statusText);
         });
     }
+
+    $onInit() {}
 
     save(): void {
         this.MinemeldConfigService.addNode(

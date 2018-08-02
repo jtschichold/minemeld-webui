@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMineMeldAPIService, IMineMeldAPIResource } from './minemeldapi';
 import { IMinemeldEventsService } from './events';
 
@@ -366,7 +364,7 @@ export class MinemeldStatusService implements IMinemeldStatusService {
             ts = result.timestamp;
 
             this.currentStatus = {};
-            angular.forEach(status, (n: IMinemeldStatusNode) => {
+            status.forEach((n: IMinemeldStatusNode) => {
                 this.currentStatus[n.name] = n;
             });
             this.statusUpdated = ts;

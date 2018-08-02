@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldConfigService, IMinemeldCandidateConfigInfo, IMinemeldCandidateConfigNode } from  '../../app/services/config';
 import { IConfirmService } from '../../app/services/confirm';
@@ -7,15 +7,21 @@ import { IMinemeldSupervisorService } from '../../app/services/supervisor';
 import { IMineMeldEngineStatusService, IMineMeldEngineStatus } from '../../app/services/enginestatus';
 import { IMineMeldCurrentUserService } from '../services/currentuser';
 
-declare var he: any;
+import './config.style';
 
-export class ConfigController {
+const importTemplate = require<string>('./configureimport.modal.tpl');
+const exportTemplate = require<string>('./configureexport.modal.tpl');
+const outputTemplate = require<string>('./configureoutput.modal.tpl');
+const inputsTemplate = require<string>('./configureinputs.modal.tpl');
+
+export class ConfigController  implements angular.IController {
     toastr: any;
     $scope: angular.IScope;
     $compile: angular.ICompileService;
     $state: angular.ui.IStateService;
     $q: angular.IQService;
     $modal: angular.ui.bootstrap.IModalService;
+    $sce: angular.ISCEService;
     DTColumnBuilder: any;
     DTOptionsBuilder: any;
     MinemeldConfigService: IMinemeldConfigService;
@@ -46,7 +52,8 @@ export class ConfigController {
                 MineMeldEngineStatusService: IMineMeldEngineStatusService,
                 MineMeldCurrentUserService: IMineMeldCurrentUserService,
                 $state: angular.ui.IStateService, $q: angular.IQService,
-                $modal: angular.ui.bootstrap.IModalService,
+                $uibModal: angular.ui.bootstrap.IModalService,
+                $sce: angular.ISCEService,
                 ConfirmService: IConfirmService) {
         this.toastr = toastr;
         this.$scope = $scope;
@@ -55,7 +62,8 @@ export class ConfigController {
         this.$compile = $compile;
         this.$state = $state;
         this.$q = $q;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
+        this.$sce = $sce;
         this.MinemeldConfigService = MinemeldConfigService;
         this.MinemeldPrototypeService = MinemeldPrototypeService;
         this.MinemeldSupervisorService = MinemeldSupervisorService;
@@ -65,6 +73,8 @@ export class ConfigController {
 
         this.setupNodesTable();
     }
+
+    $onInit() {}
 
     revert() {
         this.MinemeldConfigService.reload('running').then((result: any) => {
@@ -86,7 +96,7 @@ export class ConfigController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/config/configureimport.modal.html',
+            template: importTemplate,
             controller: 'ConfigureImportController',
             controllerAs: 'vm',
             bindToController: true,
@@ -107,7 +117,7 @@ export class ConfigController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/config/configureexport.modal.html',
+            template: exportTemplate,
             controller: 'ConfigureExportController',
             controllerAs: 'vm',
             bindToController: true,
@@ -121,7 +131,7 @@ export class ConfigController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/config/configureoutput.modal.html',
+            template: outputTemplate,
             controller: ConfigureOutputController,
             controllerAs: 'vm',
             bindToController: true,
@@ -158,7 +168,7 @@ export class ConfigController {
         }
 
         mi = this.$modal.open({
-            templateUrl: 'app/config/configureinputs.modal.html',
+            template: inputsTemplate,
             controller: ConfigureInputsController,
             controllerAs: 'vm',
             bindToController: true,
@@ -270,7 +280,7 @@ export class ConfigController {
             fc = <HTMLElement>thead.childNodes[5];
             fc.setAttribute('ng-show', 'vm.expertMode');
 
-            vm.$compile(angular.element(thead).contents())(vm.$scope);
+            vm.$compile(<any>angular.element(thead).contents())(vm.$scope);
         })
         .withOption('createdRow', function(row: HTMLScriptElement, data: any, index: any) {
             var c: string;
@@ -324,7 +334,7 @@ export class ConfigController {
             fc.setAttribute('tooltip-append-to-body', 'true');
             fc.className += ' config-table-clickable';
 
-            vm.$compile(angular.element(row).contents())(vm.$scope);
+            vm.$compile(<any>angular.element(row).contents())(vm.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -339,7 +349,7 @@ export class ConfigController {
                 return '';
             }).withOption('width', '5px').notSortable(),
             this.DTColumnBuilder.newColumn('name').withTitle('NAME').renderWith(function(data: any, type: any, full: any) {
-                return he.encode(data, { strict: true });
+                return vm.$sce.getTrustedHtml(data);
             }),
             this.DTColumnBuilder.newColumn(null).withTitle('TYPE').renderWith(function(data: any, type: any, full: any) {
                 var v, c, nt: string;
@@ -348,7 +358,7 @@ export class ConfigController {
                     return '<span class="label label-default">UNKNOWN</span>';
                 }
 
-                nt = he.encode(full.properties.node_type, {strict: true});
+                nt = vm.$sce.getTrustedHtml(full.properties.node_type);
                 c = 'nodes-label-' + nt;
                 v = <string>(nt).toUpperCase();
 
@@ -367,7 +377,7 @@ export class ConfigController {
 
                     result = ['<ul style="margin: 0;">'];
                     result = result.concat(full.properties.inputs.map(
-                        (x: string) => { return '<li style="padding-bottom: 0px;">' + he.encode(x, {strict: true}) + '</li>'; }
+                        (x: string) => { return '<li style="padding-bottom: 0px;">' + vm.$sce.getTrustedHtml(x) + '</li>'; }
                     ));
                     result.push('</ul>');
 
@@ -484,11 +494,11 @@ export class ConfigureOutputController {
 
     /** @ngInject */
     constructor(MinemeldConfigService: IMinemeldConfigService,
-                $modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+                $uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 nodenum: number) {
         this.nodenum = nodenum;
         this.MinemeldConfigService = MinemeldConfigService;
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.nodeConfig = this.MinemeldConfigService.nodesConfig[nodenum];
         this.output = this.nodeConfig.properties.output;
         this.originalOutput = this.output;
@@ -541,11 +551,11 @@ export class ConfigureInputsController {
 
     /** @ngInject */
     constructor(MinemeldConfigService: IMinemeldConfigService,
-                $modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+                $uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 nodenum: number) {
         this.nodenum = nodenum;
         this.MinemeldConfigService = MinemeldConfigService;
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
 
         this.nodeConfig = this.MinemeldConfigService.nodesConfig[nodenum];
         if (typeof this.nodeConfig.properties.node_type !== 'undefined') {

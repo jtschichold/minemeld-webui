@@ -1,11 +1,10 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
 import { IConfirmService } from '../../app/services/confirm';
 
-declare var he: any;
-declare var moment: any;
+import moment from 'moment';
 
 class NodeDetailLocalDbIndicatorsController {
     MinemeldConfigService: IMinemeldConfigService;
@@ -31,7 +30,8 @@ class NodeDetailLocalDbIndicatorsController {
     constructor(toastr: any, MinemeldConfigService: IMinemeldConfigService,
                 $scope: angular.IScope, DTOptionsBuilder: any,
                 DTColumnBuilder: any, $compile: angular.ICompileService,
-                $modal: angular.ui.bootstrap.IModalService,
+                $uibModal: angular.ui.bootstrap.IModalService,
+                private $sce: angular.ISCEService,
                 ConfirmService: IConfirmService) {
         this.MinemeldConfigService = MinemeldConfigService;
         this.$scope = $scope;
@@ -39,7 +39,7 @@ class NodeDetailLocalDbIndicatorsController {
         this.DTColumnBuilder = DTColumnBuilder;
         this.DTOptionsBuilder = DTOptionsBuilder;
         this.$compile = $compile;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.ConfirmService = ConfirmService;
         this.nodename = $scope.$parent['nodedetail']['nodename'];
         this.cfd_indicators = this.nodename + '_indicators';
@@ -50,7 +50,7 @@ class NodeDetailLocalDbIndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/localdb.indicator.modal.html',
+            template: require('./localdb.indicator.modal.tpl'),
             controller: LocalDbIndicatorController,
             controllerAs: 'vm',
             bindToController: true,
@@ -80,7 +80,7 @@ class NodeDetailLocalDbIndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/localdb.indicator.modal.html',
+            template: require('./localdb.indicator.modal.tpl'),
             controller: LocalDbIndicatorController,
             controllerAs: 'vm',
             bindToController: true,
@@ -135,6 +135,8 @@ class NodeDetailLocalDbIndicatorsController {
     }
 
     private setupIndicatorsTable(): void {
+        let vm: NodeDetailLocalDbIndicatorsController = this;
+
         this.dtOptions = this.DTOptionsBuilder.fromFnPromise(() => {
             return this.MinemeldConfigService.getDataFile(this.cfd_indicators, 'localdb').then((result: any) => {
                 this.changed = false;
@@ -181,7 +183,7 @@ class NodeDetailLocalDbIndicatorsController {
             fc.setAttribute('tooltip-append-to-body', 'true');
             fc.className += ' config-table-clickable';
 
-            this.$compile(angular.element(row).contents())(this.$scope);
+            this.$compile(<any>angular.element(row).contents())(this.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -194,7 +196,7 @@ class NodeDetailLocalDbIndicatorsController {
         this.dtColumns = [
             this.DTColumnBuilder.newColumn('indicator').withTitle('INDICATOR').withOption('width', '20%').renderWith((data: any, type: any, full: any) => {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -202,7 +204,7 @@ class NodeDetailLocalDbIndicatorsController {
             this.DTColumnBuilder.newColumn('type').withTitle('TYPE')
                 .withOption('defaultContent', ' ').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -210,7 +212,7 @@ class NodeDetailLocalDbIndicatorsController {
             this.DTColumnBuilder.newColumn('comment').withTitle('COMMENT')
                 .withOption('defaultContent', ' ').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -218,7 +220,7 @@ class NodeDetailLocalDbIndicatorsController {
             this.DTColumnBuilder.newColumn('_update_ts').withTitle('LAST UPDATE')
                 .withOption('defaultContent', ' ').withOption('width', '20%').renderWith(function(data: any, type: any, full: any) {
                     if (data) {
-                        return moment(data).format('DD/MM/YYYY HH:mm:ss Z');
+                        return  moment(data).format('DD/MM/YYYY HH:mm:ss Z');
                     }
 
                     return 'N/A';
@@ -346,9 +348,9 @@ class LocalDbIndicatorController {
     private editor: any;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 indicator: any) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
 
         if (typeof(indicator) !== 'undefined') {
             // everything read only
@@ -513,7 +515,7 @@ class LocalDbIndicatorController {
 function localDbRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.localdbindicators', {
-            templateUrl: 'app/nodedetail/localdb.indicators.html',
+            template: require('./localdb.indicators.tpl'),
             controller: NodeDetailLocalDbIndicatorsController,
             controllerAs: 'vm'
         })

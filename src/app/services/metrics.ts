@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMineMeldAPIService } from './minemeldapi';
 
 export interface IMinemeldMetricsService {

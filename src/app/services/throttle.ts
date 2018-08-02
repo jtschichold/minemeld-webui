@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 /* Code based on
      Underscore.js 1.8.3
      http://underscorejs.org

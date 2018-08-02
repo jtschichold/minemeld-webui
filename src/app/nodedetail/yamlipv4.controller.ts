@@ -1,11 +1,9 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
 import { IConfirmService } from '../../app/services/confirm';
 import { YamlConfigureCommentController, YamlConfigureShareLevelController } from './yamlmodals.controller';
-
-declare var he: any;
 
 class ConfigureDirectionController {
     origDirection: string;
@@ -20,9 +18,9 @@ class ConfigureDirectionController {
     ];
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 indicator: string, direction: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.origDirection = direction;
         this.direction = this.origDirection;
         this.indicator = indicator;
@@ -61,7 +59,8 @@ class NodeDetailYamlIPv4IndicatorsController {
     constructor(toastr: any, MinemeldConfigService: IMinemeldConfigService,
                 $scope: angular.IScope, DTOptionsBuilder: any,
                 DTColumnBuilder: any, $compile: angular.ICompileService,
-                $modal: angular.ui.bootstrap.IModalService,
+                $uibModal: angular.ui.bootstrap.IModalService,
+                private $sce: angular.ISCEService,
                 ConfirmService: IConfirmService) {
         this.MinemeldConfigService = MinemeldConfigService;
         this.$scope = $scope;
@@ -69,7 +68,7 @@ class NodeDetailYamlIPv4IndicatorsController {
         this.DTColumnBuilder = DTColumnBuilder;
         this.DTOptionsBuilder = DTOptionsBuilder;
         this.$compile = $compile;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.ConfirmService = ConfirmService;
         this.nodename = $scope.$parent['nodedetail']['nodename'];
         this.cfd_indicators = this.nodename + '_indicators';
@@ -80,7 +79,7 @@ class NodeDetailYamlIPv4IndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/yamlipv4.add.modal.html',
+            template: require('./yamlipv4.add.modal.tpl'),
             controller: YamlIPv4AddIndicatorController,
             controllerAs: 'vm',
             bindToController: true,
@@ -125,7 +124,7 @@ class NodeDetailYamlIPv4IndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/yamlipv4.direction.modal.html',
+            template: require('./yamlipv4.direction.modal.tpl'),
             controller: ConfigureDirectionController,
             controllerAs: 'vm',
             bindToController: true,
@@ -165,7 +164,7 @@ class NodeDetailYamlIPv4IndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/yaml.sharelevel.modal.html',
+            template: require('./yaml.sharelevel.modal.tpl'),
             controller: YamlConfigureShareLevelController,
             controllerAs: 'vm',
             bindToController: true,
@@ -204,7 +203,7 @@ class NodeDetailYamlIPv4IndicatorsController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/yaml.comment.modal.html',
+            template: require('./yaml.comment.modal.tpl'),
             controller: YamlConfigureCommentController,
             controllerAs: 'vm',
             bindToController: true,
@@ -294,7 +293,7 @@ class NodeDetailYamlIPv4IndicatorsController {
             fc.setAttribute('tooltip-popup-delay', '500');
             fc.className += ' config-table-clickable';
 
-            vm.$compile(angular.element(row).contents())(vm.$scope);
+            vm.$compile(<any>angular.element(row).contents())(vm.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -307,7 +306,7 @@ class NodeDetailYamlIPv4IndicatorsController {
         this.dtColumns = [
             this.DTColumnBuilder.newColumn('indicator').withTitle('INDICATOR').withOption('width', '25%').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -351,7 +350,7 @@ class NodeDetailYamlIPv4IndicatorsController {
             }),
             this.DTColumnBuilder.newColumn('comment').withTitle('COMMENT').withOption('defaultContent', ' ').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -386,8 +385,8 @@ class YamlIPv4AddIndicatorController {
     ];
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance) {
+        this.$modalInstance = $uibModalInstance;
     }
 
     save() {
@@ -500,7 +499,7 @@ class YamlIPv4AddIndicatorController {
 function yamlIPv4RouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.yamlipv4indicators', {
-            templateUrl: 'app/nodedetail/yamlipv4.indicators.html',
+            template: require('./yamlipv4.indicators.tpl'),
             controller: NodeDetailYamlIPv4IndicatorsController,
             controllerAs: 'vm'
         })

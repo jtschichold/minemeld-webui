@@ -1,15 +1,16 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldPrototypeService, IMinemeldPrototype } from '../../app/services/prototype';
 
-declare var he: any;
+import './prototypes.style';
 
-export class PrototypesController {
+export class PrototypesController  implements angular.IController {
     MinemeldPrototypeService: IMinemeldPrototypeService;
     toastr: any;
     $scope: angular.IScope;
     $compile: angular.ICompileService;
     $state: angular.ui.IStateService;
+    $sce: angular.ISCEService;
     DTColumnBuilder: any;
     DTOptionsBuilder: any;
 
@@ -20,11 +21,13 @@ export class PrototypesController {
     /** @ngInject */
     constructor(toastr: any,
         MinemeldPrototypeService: IMinemeldPrototypeService,
-        moment: moment.MomentStatic, $scope: angular.IScope, DTOptionsBuilder: any,
-        DTColumnBuilder: any, $compile: angular.ICompileService, $state: angular.ui.IStateService) {
+        $scope: angular.IScope, DTOptionsBuilder: any,
+        DTColumnBuilder: any, $sce: angular.ISCEService,
+        $compile: angular.ICompileService, $state: angular.ui.IStateService) {
         this.MinemeldPrototypeService = MinemeldPrototypeService;
         this.toastr = toastr;
         this.$scope = $scope;
+        this.$sce = $sce;
         this.DTColumnBuilder = DTColumnBuilder;
         this.DTOptionsBuilder = DTOptionsBuilder;
         this.$compile = $compile;
@@ -33,11 +36,15 @@ export class PrototypesController {
         this.setupPrototypesTable();
     }
 
+    $onInit() {}
+
     public go(newstate: string) {
         this.$state.transitionTo('nodedetail', { nodename: newstate });
     }
 
     private setupPrototypesTable() {
+        let vm: PrototypesController = this;
+
         this.dtOptions = this.DTOptionsBuilder.fromFnPromise(() => {
             var $p: any = this.MinemeldPrototypeService.getPrototypeLibraries()
                 .then((result: any) => {
@@ -132,7 +139,7 @@ export class PrototypesController {
                 fc.setAttribute('ng-click', 'vm.$state.go("prototypedetail", {libraryName: "' + data.libraryName + '", prototypeName: "' + data.prototypeName + '"})');
             }
 
-            this.$compile(angular.element(row).contents())(this.$scope);
+            this.$compile(<any>angular.element(row).contents())(this.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -160,13 +167,13 @@ export class PrototypesController {
                     }
                 }
 
-                sname = he.encode(data, { strict: true });
+                sname = vm.$sce.getTrustedHtml(data);
                 r = '<div tooltip="' + sname + '" class="prototypes-name"><span class="label ' + labelclass + ' mm-label"><i class="' + iconclass + '"></i></span> ';
                 r += sname;
                 r += '</div>';
 
                 if (full.author) {
-                    r += '<div class="prototypes-author">' + he.encode(full.author.toUpperCase(), { strict: true }) + '</div>';
+                    r += '<div class="prototypes-author">' + vm.$sce.getTrustedHtml(full.author.toUpperCase()) + '</div>';
                 }
 
                 return r;
@@ -186,7 +193,7 @@ export class PrototypesController {
                     v = 'PROCESSOR';
                 } else {
                     c = 'label-default';
-                    v = he.encode(data);
+                    v = vm.$sce.getTrustedHtml(data);
                 }
 
                 return '<span class="label ' + c + '">' + v + '</span>';
@@ -212,17 +219,17 @@ export class PrototypesController {
                 }
 
                 if (full.libraryDescription) {
-                    r += '<div class="m-b-xs"><strong>' + he.encode(full.libraryName) + '</strong> ' + he.encode(full.libraryDescription) + '</div>';
+                    r += '<div class="m-b-xs"><strong>' + vm.$sce.getTrustedHtml(full.libraryName) + '</strong> ' + vm.$sce.getTrustedHtml(full.libraryDescription) + '</div>';
                 }
                 if (full.prototypeDescription) {
-                    r += '<div><strong>' + he.encode(full.libraryName) + '.' + he.encode(full.prototypeName) + '</strong> ' + he.encode(full.prototypeDescription) + '</div>';
+                    r += '<div><strong>' + vm.$sce.getTrustedHtml(full.libraryName) + '.' + vm.$sce.getTrustedHtml(full.prototypeName) + '</strong> ' + vm.$sce.getTrustedHtml(full.prototypeDescription) + '</div>';
                 }
 
                 if (full.tags.length !== 0) {
                     r += '<div class="prototypes-author m-t-xs">TAGS</div>';
                     r += '<div class="label-container">';
                     angular.forEach(full.tags, (tag: string) => {
-                        r += '<span class="label tag-prototype">' + he.encode(tag) + '</span> ';
+                        r += '<span class="label tag-prototype">' + vm.$sce.getTrustedHtml(tag) + '</span> ';
                     });
                     r += '</div>';
                 }

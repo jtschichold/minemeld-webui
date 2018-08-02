@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 export class AdminConfigureCommentController {
     origComment: string;
@@ -9,9 +9,9 @@ export class AdminConfigureCommentController {
     comment: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 username: string, comment: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.origComment = comment;
         this.comment = this.origComment;
         this.username = username;
@@ -34,9 +34,9 @@ export class AdminConfigureTagsController {
     changed: boolean = false;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 tags: string[], availableTags: string[]) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         if (tags) {
             this.tags = tags;
         }
@@ -65,9 +65,9 @@ export class AdminAddUserController {
     password2: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 users: string[], username: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
 
         this.users = users;
 

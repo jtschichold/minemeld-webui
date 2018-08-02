@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 export class YamlConfigureShareLevelController {
     origShareLevel: string;
@@ -9,9 +9,9 @@ export class YamlConfigureShareLevelController {
     share_level: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 indicator: string, share_level: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.origShareLevel = share_level;
         this.share_level = this.origShareLevel;
         this.indicator = indicator;
@@ -35,9 +35,9 @@ export class YamlConfigureCommentController {
     comment: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 indicator: string, comment: string) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.origComment = comment;
         this.comment = this.origComment;
         this.indicator = indicator;

@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldStatusService, IMinemeldStatus, IMinemeldStatusNode } from  '../../app/services/status';
 import { IThrottleService, IThrottled } from '../../app/services/throttle';
@@ -6,14 +6,14 @@ import { IMineMeldRunningConfigStatusService, IMineMeldRunningConfigStatus, IMin
 import { IMinemeldPrototypeService } from '../../app/services/prototype';
 import { IMineMeldCurrentUserService } from '../services/currentuser';
 
-declare var he: any;
+import './nodes.style';
 
 interface INodeStatus {
     status: IMinemeldStatusNode;
     nodeType?: string;
 }
 
-export class NodesController {
+export class NodesController  implements angular.IController {
     mmstatus: IMinemeldStatusService;
     MineMeldRunningConfigStatusService: IMineMeldRunningConfigStatusService;
     MinemeldPrototypeService: IMinemeldPrototypeService;
@@ -24,6 +24,7 @@ export class NodesController {
     $compile: angular.ICompileService;
     $state: angular.ui.IStateService;
     $q: angular.IQService;
+    $sce: angular.ISCEService;
     DTColumnBuilder: any;
     DTOptionsBuilder: any;
 
@@ -50,7 +51,8 @@ export class NodesController {
         $q: angular.IQService,
         $rootScope: angular.IRootScopeService,
         $timeout: angular.ITimeoutService,
-        ThrottleService: IThrottleService) {
+        ThrottleService: IThrottleService,
+        $sce: angular.ISCEService) {
         this.toastr = toastr;
         this.mmstatus = MinemeldStatusService;
         this.MineMeldRunningConfigStatusService = MineMeldRunningConfigStatusService;
@@ -63,6 +65,7 @@ export class NodesController {
         this.$compile = $compile;
         this.$state = $state;
         this.$q = $q;
+        this.$sce = $sce;
 
         this.setupNodesTable();
 
@@ -78,6 +81,8 @@ export class NodesController {
 
         this.$scope.$on('$destroy', this.destroy.bind(this));
     }
+
+    $onInit() {}
 
     public go(newstate: string) {
         this.$state.transitionTo('nodedetail', { nodename: newstate });
@@ -167,7 +172,7 @@ export class NodesController {
                 fc.setAttribute('ng-click', 'nodes.go("' + data.status.name + '")');
             }
 
-            vm.$compile(angular.element(row).contents())(vm.$scope);
+            vm.$compile(<any>angular.element(row).contents())(vm.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -182,12 +187,12 @@ export class NodesController {
                 return '';
             }).withOption('width', '5px').notSortable(),
             this.DTColumnBuilder.newColumn(null).withClass('nodes-dt-name').withTitle('NAME').renderWith(function(data: any, type: any, full: INodeStatus) {
-                var result: string = he.encode(full.status.name, {strict: true});
+                var result: string = vm.$sce.trustAsHtml(full.status.name);
 
                 if (full.status.sub_state && full.status.sub_state === 'ERROR') {
                     result = result + ' <span';
                     if (full.status.sub_state_message) {
-                        result = result + ' tooltip="' + he.encode(full.status.sub_state_message, {strict: true}) + '"';
+                        result = result + ' tooltip="' + this.$sce.trustAsHtml(full.status.sub_state_message) + '"';
                     }
                     result = result + 'class="text-danger glyphicon glyphicon-exclamation-sign"></span>';
                 }

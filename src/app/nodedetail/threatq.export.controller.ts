@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
@@ -11,7 +11,7 @@ import { IThrottleService } from '../../app/services/throttle';
 function threatqExportConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.threatqexportinfo', {
-            templateUrl: 'app/nodedetail/threatqexport.info.html',
+            template: require('./threatqexport.info.tpl'),
             controller: NodeDetailThreatQExportInfoController,
             controllerAs: 'nodedetailinfo'
         })
@@ -52,21 +52,21 @@ class NodeDetailThreatQExportInfoController extends NodeDetailInfoController {
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         ConfirmService: IConfirmService) {
-        this.MinemeldConfigService = MinemeldConfigService;
-        this.$modal = $modal;
-        this.ConfirmService = ConfirmService;
-
         super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
+            toastr, $interval, MinemeldStatusService, $scope,
             $compile, $state, $stateParams, $rootScope, ThrottleService
         );
+
+        this.MinemeldConfigService = MinemeldConfigService;
+        this.$modal = $uibModal;
+        this.ConfirmService = ConfirmService;
 
         this.loadSideConfig();
     }
@@ -117,7 +117,7 @@ class NodeDetailThreatQExportInfoController extends NodeDetailInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/threatqexport.url.modal.html',
+            template: require('./threatqexport.url.modal.tpl'),
             controller: ThreatQExportSetUrlController,
             controllerAs: 'vm',
             bindToController: true,
@@ -185,8 +185,8 @@ class ThreatQExportSetUrlController {
     }
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance, url: string) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance, url: string) {
+        this.$modalInstance = $uibModalInstance;
         this.url = url;
     }
 

@@ -1,8 +1,10 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldTracedService } from  '../../app/services/traced';
 
-declare var he: any;
+import './logs.style';
+
+const logEntryTemplate = require<string>('./logentry.view.modal.tpl');
 
 interface IRunningQuery {
     direction: string;
@@ -11,7 +13,7 @@ interface IRunningQuery {
     numLinesReceived: number;
 }
 
-export class LogsController {
+export class LogsController  implements angular.IController {
     MinemeldTracedService: IMinemeldTracedService;
     $scope: angular.IScope;
     $modal: angular.ui.bootstrap.IModalService;
@@ -29,7 +31,7 @@ export class LogsController {
 
     boundResizeTable: any;
     boundScrollHandler: any;
-    $window: angular.IAugmentedJQuery;
+    $window: JQuery<Window>;
     $table: angular.IAugmentedJQuery;
 
     lastScroll: number = 0;
@@ -37,11 +39,11 @@ export class LogsController {
 
     /* @ngInject */
     constructor(MinemeldTracedService: IMinemeldTracedService, $scope: angular.IScope,
-                $modal: angular.ui.bootstrap.IModalService, $state: angular.ui.IStateService,
+                $uibModal: angular.ui.bootstrap.IModalService, $state: angular.ui.IStateService,
                 $stateParams: angular.ui.IStateParamsService) {
         this.MinemeldTracedService = MinemeldTracedService;
         this.$scope = $scope;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.$state = $state;
 
         this.query = $stateParams['q'];
@@ -63,6 +65,8 @@ export class LogsController {
 
         this.doQuery('bottom');
     }
+
+    $onInit() {}
 
     submitQuery(): void {
         if (this.runningQuery) {
@@ -98,7 +102,7 @@ export class LogsController {
 
     viewEntry($index: number) {
         this.$modal.open({
-            templateUrl: 'app/logs/logentry.view.modal.html',
+            template: logEntryTemplate,
             controller: LogsEntryViewController,
             controllerAs: 'vm',
             bindToController: true,
@@ -297,10 +301,10 @@ class LogsEntryViewController {
     curLogJSON: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 $scope: angular.IScope,
                 entries: any[], index: number) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.$scope = $scope;
 
         this.entries = entries;

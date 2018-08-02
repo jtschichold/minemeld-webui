@@ -1,10 +1,10 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldConfigService, IMinemeldCandidateConfigNode } from  '../../app/services/config';
 
-declare var jsyaml: any;
+const jsyaml: any = require('js-yaml');
 
-export class ConfigureExportController {
+export class ConfigureExportController  implements angular.IController {
     $modalInstance: angular.ui.bootstrap.IModalServiceInstance;
     MinemeldConfigService: IMinemeldConfigService;
 
@@ -12,11 +12,11 @@ export class ConfigureExportController {
     editor: any;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 MinemeldConfigService: IMinemeldConfigService) {
         var vm: any = this;
 
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.MinemeldConfigService = MinemeldConfigService;
 
         this.dumpYaml();
@@ -37,6 +37,8 @@ export class ConfigureExportController {
             });
         };
     }
+
+    $onInit() {}
 
     copyToClipboard(): void {
         this.editor.selectAll();

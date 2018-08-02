@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldStatusNode } from '../../app/services/status';
@@ -24,7 +24,7 @@ class NodeDetailRedisSetInfoController extends NodeDetailFeedInfoController {
 function redisSetRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.redissetinfo', {
-            templateUrl: 'app/nodedetail/redisset.info.html',
+            template: require('./redisset.info.tpl'),
             controller: 'NodeDetailRedisSetInfoController',
             controllerAs: 'vm'
         })

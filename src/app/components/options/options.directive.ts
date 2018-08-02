@@ -1,8 +1,12 @@
+import './options.style';
+
+const template = require<string>('./options.tpl');
+
 /** @ngInject */
 export function minemeldOptions(): ng.IDirective {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/options/options.html',
+        template: template,
         bindToController: true,
         transclude: true,
         link: function(scope: any, element: JQuery, attr: ng.IAttributes) {

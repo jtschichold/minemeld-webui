@@ -1,8 +1,10 @@
+const template = require<string>('./nodeconfig.tpl');
+
 /** @ngInject */
 export function nodeConfig(): ng.IDirective {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/nodeconfig/nodeconfig.html',
+        template: template,
         scope: {
             config: '='
         },
@@ -13,7 +15,7 @@ export function nodeConfig(): ng.IDirective {
 }
 
 /** @ngInject */
-export class NodeConfigController {
+export class NodeConfigController  implements angular.IController {
     config: any;
     num_properties: number;
 

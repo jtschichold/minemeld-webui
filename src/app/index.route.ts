@@ -1,142 +1,42 @@
+import * as fromAbout from './about';
+import * as fromAdmin from './admin';
+import * as fromLogin from './login';
+import * as fromSystem from './system';
+import * as fromDashboard from './dashboard';
+import * as fromNodes from './nodes';
+import * as fromNodeDetail from './nodedetail';
+import * as fromPrototypes from './prototypes';
+import * as fromPrototypeDetail from './prototypedetail';
+import * as fromPrototypeAdd from './prototypeadd';
+import * as fromConfig from './config';
+import * as fromIndicatorAdd from './indicatoradd';
+import * as fromLogs from './logs';
+
 /** @ngInject */
 export function routerConfig($stateProvider: ng.ui.IStateProvider, $urlRouterProvider: ng.ui.IUrlRouterProvider) {
-  $stateProvider
-    .state('login', {
-      url: '/login',
-      templateUrl: 'app/login/view.html',
-      controller: 'LoginController',
-      controllerAs: 'login'
-    })
-    .state('about', {
-      url: '/about',
-      templateUrl: 'app/about/view.html',
-      controller: 'AboutController',
-      controllerAs: 'vm'
-    })
-    .state('system', {
-      url: '/system',
-      templateUrl: 'app/system/view.html',
-      controller: 'SystemController',
-      controllerAs: 'vm',
-      abstract: true
-    })
-    .state('system.dashboard', {
-      url: '/dashboard',
-      templateUrl: 'app/system/dashboard.view.html',
-      controller: 'SystemDashboardController',
-      controllerAs: 'vm'
-    })
-    .state('system.extensions', {
-      url: '/extensions',
-      templateUrl: 'app/system/extensions.view.html',
-      controller: 'SystemExtensionsController',
-      controllerAs: 'vm'
-    })
-    .state('dashboard', {
-      url: '/dashboard',
-      templateUrl: 'app/dashboard/view.html',
-      controller: 'DashboardController',
-      controllerAs: 'dashboard'
-    })
-    .state('nodes', {
-      url: '/nodes',
-      templateUrl: 'app/nodes/view.html',
-      controller: 'NodesController',
-      controllerAs: 'nodes'
-    })
-    .state('nodedetail', {
-      url: '/nodes/:nodename',
-      templateUrl: 'app/nodedetail/view.html',
-      controller: 'NodeDetailController',
-      controllerAs: 'nodedetail'
-    })
-    .state('nodedetail.stats', {
-      templateUrl: 'app/nodedetail/view.stats.html',
-      controller: 'NodeDetailStatsController',
-      controllerAs: 'nodedetailstats'
-    })
-    .state('nodedetail.info', {
-      templateUrl: 'app/nodedetail/view.info.html',
-      controller: 'NodeDetailInfoController',
-      controllerAs: 'nodedetailinfo'
-    })
-    .state('nodedetail.graph', {
-      templateUrl: 'app/nodedetail/view.graph.html',
-      controller: 'NodeDetailGraphController',
-      controllerAs: 'vm'
-    })
-    .state('prototypes', {
-      url: '/prototypes',
-      templateUrl: 'app/prototypes/view.html',
-      controller: 'PrototypesController',
-      controllerAs: 'vm'
-    })
-    .state('prototypedetail', {
-      url: '/prototypes/:libraryName/:prototypeName',
-      templateUrl: 'app/prototypedetail/view.html',
-      controller: 'PrototypedetailController',
-      controllerAs: 'vm'
-    })
-    .state('prototypeadd', {
-      url: '/prototypeadd',
-      templateUrl: 'app/prototypeadd/view.html',
-      controller: 'PrototypeAddController',
-      controllerAs: 'vm',
-      params: {
-        prototype: {
-          value: 'none'
-        }
-      }
-    })
-    .state('config', {
-      url: '/config',
-      templateUrl: 'app/config/view.html',
-      controller: 'ConfigController',
-      controllerAs: 'vm'
-    })
-    .state('configadd', {
-      url: '/config/add',
-      templateUrl: 'app/config/configadd.view.html',
-      controller: 'ConfigAddController',
-      controllerAs: 'vm',
-      params: {
-        prototype: {
-          value: 'none'
-        }
-      }
-    })
-    .state('indicatoradd', {
-      url: '/indicator/add?indicator&indicatorType',
-      templateUrl: 'app/indicatoradd/view.html',
-      controller: 'IndicatorAddController',
-      controllerAs: 'vm'
-    })
-    .state('logs', {
-      url: '/logs?q',
-      templateUrl: 'app/logs/view.html',
-      controller: 'LogsController',
-      controllerAs: 'vm'
-    })
-    .state('admin', {
-      abstract: true,
-      url: '/admin',
-      templateUrl: 'app/admin/view.html',
-      controller: 'AdminController',
-      controllerAs: 'vm'
-    })
-    .state('admin.users', {
-      url: '/users',
-      templateUrl: 'app/admin/view.users.html',
-      controller: 'AdminUsersController',
-      controllerAs: 'vm'
-    })
-    .state('admin.fusers', {
-      url: '/fusers',
-      templateUrl: 'app/admin/view.fusers.html',
-      controller: 'AdminFUsersController',
-      controllerAs: 'vm'
-    })
+    $stateProvider
+        .state('login', fromLogin.uiState)
+        .state('about', fromAbout.uiState)
+        .state('system', fromSystem.baseState)
+        .state('system.dashboard', fromSystem.dashboardState)
+        .state('system.extensions', fromSystem.extensionsState)
+        .state('dashboard', fromDashboard.uiState)
+        .state('nodes', fromNodes.uiState)
+        .state('nodedetail', fromNodeDetail.baseState)
+        .state('nodedetail.stats', fromNodeDetail.statsState)
+        .state('nodedetail.info', fromNodeDetail.infoState)
+        .state('nodedetail.graph', fromNodeDetail.graphState)
+        .state('prototypes', fromPrototypes.uiState)
+        .state('prototypedetail', fromPrototypeDetail.uiState)
+        .state('prototypeadd', fromPrototypeAdd.uiState)
+        .state('config', fromConfig.baseState)
+        .state('configadd', fromConfig.addState)
+        .state('indicatoradd', fromIndicatorAdd.uiState)
+        .state('logs', fromLogs.uiState)
+        .state('admin', fromAdmin.baseState)
+        .state('admin.users', fromAdmin.usersState)
+        .state('admin.fusers', fromAdmin.fusersState)
     ;
 
-  $urlRouterProvider.otherwise('/login');
+    $urlRouterProvider.otherwise('/login');
 }

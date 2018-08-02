@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
@@ -60,7 +60,7 @@ class ET {
 function proofpointRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.proofpointinfo', {
-            templateUrl: 'app/nodedetail/proofpoint.info.html',
+            template: require('./proofpoint.info.tpl'),
             controller: NodeDetailProofpointInfoController,
             controllerAs: 'nodedetailinfo'
         })
@@ -123,19 +123,19 @@ class NodeDetailProofpointInfoController extends NodeDetailInfoController {
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService) {
         super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
+            toastr, $interval, MinemeldStatusService, $scope,
             $compile, $state, $stateParams, $rootScope, ThrottleService
         );
 
         this.MinemeldConfigService = MinemeldConfigService;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
 
         this.loadSideConfig();
     }
@@ -182,7 +182,7 @@ class NodeDetailProofpointInfoController extends NodeDetailInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/proofpoint.sac.modal.html',
+            template: require('./proofpoint.sac.modal.tpl'),
             controller: ProofpointSetAuthCodeController,
             controllerAs: 'vm',
             bindToController: true,
@@ -221,7 +221,7 @@ class NodeDetailProofpointInfoController extends NodeDetailInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/proofpoint.smc.modal.html',
+            template: require('./proofpoint.smc.modal.tpl'),
             controller: ProofpointSetCategoriesController,
             controllerAs: 'vm',
             bindToController: true,
@@ -284,8 +284,8 @@ class ProofpointSetAuthCodeController {
     }
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance) {
+        this.$modalInstance = $uibModalInstance;
     }
 
     save() {
@@ -309,9 +309,9 @@ class ProofpointSetCategoriesController {
     changed: boolean = false;
 
     /* @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 categories: number[]) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         if (categories) {
             this.categories = categories.map(ET.numberToName);
         }

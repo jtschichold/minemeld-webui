@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "4.2"
+  - "8.11.3"
 
 addons:
   apt:
@@ -12,14 +12,8 @@ addons:
 env:
   - CXX=g++-4.8
 
-before_script:
-  - "export PATH=$(npm bin):$PATH"
-  - bower install --strict-shrinkwrap
-  - typings install
-  - nsp check
-
 script:
-  - gulp build
+  - npm run dist
 
 before_deploy:
   - cd dist

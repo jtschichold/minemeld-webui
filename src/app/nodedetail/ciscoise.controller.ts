@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { NodeDetailCredentialsInfoController } from './credentials.controller';
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
@@ -11,7 +11,7 @@ import { IConfirmService } from '../../app/services/confirm';
 function ciscoISEConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.ciscoiseinfo', {
-            templateUrl: 'app/nodedetail/ciscoise.info.html',
+            template: require('./ciscoise.info.tpl'),
             controller: NodeDetailCiscoISEInfoController,
             controllerAs: 'nodedetailinfo',
             params: {
@@ -73,16 +73,16 @@ class NodeDetailCiscoISEInfoController extends NodeDetailCredentialsInfoControll
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService,
         ConfirmService: IConfirmService) {
         super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
-            $compile, $state, $stateParams, MinemeldConfigService, $modal,
+            toastr, $interval, MinemeldStatusService, $scope,
+            $compile, $state, $stateParams, MinemeldConfigService, $uibModal,
             $rootScope, ThrottleService
         );
 
@@ -93,7 +93,7 @@ class NodeDetailCiscoISEInfoController extends NodeDetailCredentialsInfoControll
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/ciscoise.hostname.modal.html',
+            template: require('./ciscoise.hostname.modal.tpl'),
             controller: CiscoISESetHostnameController,
             controllerAs: 'vm',
             bindToController: true,
@@ -204,8 +204,8 @@ class CiscoISESetHostnameController {
     hostname: string;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance, hostname: string) {
-        this.$modalInstance = $modalInstance;
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance, hostname: string) {
+        this.$modalInstance = $uibModalInstance;
         this.hostname = hostname;
     }
 

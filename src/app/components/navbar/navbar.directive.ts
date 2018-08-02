@@ -1,10 +1,10 @@
-/// <reference path="../../../../typings/main.d.ts" />
-
 import { IMineMeldAPIService } from '../../services/minemeldapi';
 import { IMineMeldEngineStatusService, IMineMeldEngineStatus } from '../../services/enginestatus';
 import { IMineMeldCurrentUserService } from '../../services/currentuser';
 
-/** @ngInject */
+import './navbar.style';
+
+/* @ngInject */
 export function appNavbar(): ng.IDirective {
 
   return {
@@ -12,16 +12,15 @@ export function appNavbar(): ng.IDirective {
     scope: {
       creationDate: '='
     },
-    templateUrl: 'app/components/navbar/navbar.html',
+    template: require('./navbar.tpl'),
     controller: NavbarController,
     controllerAs: 'vm',
-    bindToController: true
+    bindToController: true,
   };
 
 }
 
-/** @ngInject */
-export class NavbarController {
+export class NavbarController  implements angular.IController {
   MineMeldAPIService: IMineMeldAPIService;
   MineMeldEngineStatusService: IMineMeldEngineStatusService;
   MineMeldCurrentUserService: IMineMeldCurrentUserService;
@@ -44,6 +43,7 @@ export class NavbarController {
     'STOPPING': 'stopping'
   };
 
+  /* @ngInject */
   constructor(MineMeldAPIService: IMineMeldAPIService,
               MineMeldEngineStatusService: IMineMeldEngineStatusService,
               MineMeldCurrentUserService: IMineMeldCurrentUserService,
@@ -67,6 +67,8 @@ export class NavbarController {
 
     this.updateEngineStatus();
   }
+
+  $onInit() {}
 
   logout() {
     this.MineMeldAPIService.logOut().finally(() => {

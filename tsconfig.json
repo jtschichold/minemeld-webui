@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs"
+    "target": "es6",
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ],
+    "removeComments": false
   },
   "exclude": [
-    "bower_components",
-    "node_modules",
-    "typings"
+    "node_modules"
   ]
 }

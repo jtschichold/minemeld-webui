@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldStatusNode } from '../../app/services/status';
@@ -22,7 +22,7 @@ class NodeDetailTAXIIDataFeedInfoController extends NodeDetailFeedInfoController
 function taxiiDataFeedRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.taxiidatafeedinfo', {
-            templateUrl: 'app/nodedetail/taxiidatafeed.info.html',
+            template: require('./taxiidatafeed.info.tpl'),
             controller: NodeDetailTAXIIDataFeedInfoController,
             controllerAs: 'vm'
         })

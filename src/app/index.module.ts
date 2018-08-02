@@ -1,4 +1,4 @@
-/// <reference path="../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { config } from './index.config';
 import { routerConfig } from './index.route';
@@ -46,13 +46,13 @@ import { MineMeldJobsService } from './services/jobs';
 import { MineMeldCurrentUserService } from './services/currentuser';
 import { MineMeldWebUIExtensionsLoaderService } from './services/webuiextensionsloader';
 import { megaNumber } from './filters/megaNumber';
-import { appNavbar } from '../app/components/navbar/navbar.directive';
-import { minemeldOptions } from '../app/components/options/options.directive';
-import { nodeConfig } from '../app/components/nodeconfig/nodeconfig.directive';
-import { prototypeTooltip } from'../app/components/prototypetooltip/prototypetooltip.directive';
-import { suggestion } from '../app/components/suggestion/suggestion.directive';
+import { appNavbar } from './components/navbar/navbar.directive';
+import { minemeldOptions } from './components/options/options.directive';
+import { nodeConfig } from './components/nodeconfig/nodeconfig.directive';
+import { prototypeTooltip } from'./components/prototypetooltip/prototypetooltip.directive';
+import { suggestion } from './components/suggestion/suggestion.directive';
 
-declare var moment: moment.MomentStatic;
+import 'sass/index';
 
 module minemeldWebui {
   'use strict';
@@ -78,7 +78,6 @@ module minemeldWebui {
     'angularFileUpload',
     'oc.lazyLoad'
   ])
-  .constant('moment', moment)
   .config(config)
   .config(routerConfig)
   .controller('DashboardController', DashboardController)

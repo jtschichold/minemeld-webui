@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { NodeDetailStatsController } from './nodedetail.stats.controller';
@@ -26,12 +26,12 @@ class NodeDetailsSyslogMatcherSourcesController extends NodeDetailStatsControlle
 function syslogMatcherRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.syslogmatcherstats', {
-            templateUrl: 'app/nodedetail/syslogmatcher.stats.html',
+            template: require('./syslogmatcher.stats.tpl'),
             controller: 'NodeDetailStatsController',
             controllerAs: 'nodedetailstats'
         })
         .state('nodedetail.syslogmatchersources', {
-            templateUrl: 'app/nodedetail/syslogmatcher.sources.html',
+            template: require('./syslogmatcher.sources.tpl'),
             controller: NodeDetailsSyslogMatcherSourcesController,
             controllerAs: 'nodedetailstats'
         })

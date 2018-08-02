@@ -1,7 +1,8 @@
 import { IMineMeldAPIService } from  '../../app/services/minemeldapi';
 
-/** @ngInject */
-export class LoginController {
+import './login.style';
+
+export class LoginController  implements angular.IController {
     username: string;
     password: string;
 
@@ -11,6 +12,7 @@ export class LoginController {
     $state: angular.ui.IStateService;
     MineMeldAPIService: IMineMeldAPIService;
 
+    /** @ngInject */
     constructor($state: angular.ui.IStateService,
                 MineMeldAPIService: IMineMeldAPIService,
                 toastr: any) {
@@ -18,6 +20,8 @@ export class LoginController {
         this.$state = $state;
         this.MineMeldAPIService = MineMeldAPIService;
     }
+
+    $onInit() {}
 
     public submit() {
         this.checking = true;

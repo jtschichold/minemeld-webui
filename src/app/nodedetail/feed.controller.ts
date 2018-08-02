@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldStatusService } from '../../app/services/status';
 import { NodeDetailInfoController } from './nodedetail.info.controller';
@@ -14,9 +14,9 @@ export class ConfigureTagsController {
     changed: boolean = false;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 tags: string[], availableTags: string[]) {
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         if (tags) {
             this.tags = tags;
         }
@@ -45,19 +45,19 @@ export class NodeDetailFeedInfoController extends NodeDetailInfoController {
     /* @ngInject */
     constructor(toastr: any, $interval: angular.IIntervalService,
         MinemeldStatusService: IMinemeldStatusService,
-        moment: moment.MomentStatic, $scope: angular.IScope,
+        $scope: angular.IScope,
         $compile: angular.ICompileService, $state: angular.ui.IStateService,
         $stateParams: angular.ui.IStateParamsService, MinemeldConfigService: IMinemeldConfigService,
-        $modal: angular.ui.bootstrap.IModalService,
+        $uibModal: angular.ui.bootstrap.IModalService,
         $rootScope: angular.IRootScopeService,
         ThrottleService: IThrottleService,
         MinemeldAAAService: IMinemeldAAAService) {
         super(
-            toastr, $interval, MinemeldStatusService, moment, $scope,
+            toastr, $interval, MinemeldStatusService, $scope,
             $compile, $state, $stateParams, $rootScope, ThrottleService
         );
 
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.MinemeldAAAService = MinemeldAAAService;
 
         this.loadTags();
@@ -67,7 +67,7 @@ export class NodeDetailFeedInfoController extends NodeDetailInfoController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/feed.tags.modal.html',
+            template: require('./feed.tags.modal.tpl'),
             controller: ConfigureTagsController,
             controllerAs: 'vm',
             bindToController: true,

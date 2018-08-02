@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 interface IMineMeldAPIPromise {
     resource: angular.resource.IResource<any>;

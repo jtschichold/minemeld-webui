@@ -1,6 +1,5 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMineMeldAPIService } from './minemeldapi';
+import { copy as angular_copy } from 'angular';
 
 export interface IMinemeldPrototypeLibrary {
     description?: string;
@@ -169,7 +168,7 @@ export class MinemeldPrototypeService implements IMinemeldPrototypeService {
         }, false);
 
         if (optionalParams) {
-            prototype = angular.copy(optionalParams);
+            prototype = angular_copy(optionalParams);
         } else {
             prototype = {};
         }

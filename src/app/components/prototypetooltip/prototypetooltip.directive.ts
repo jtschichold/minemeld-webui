@@ -1,10 +1,14 @@
 import { IMinemeldPrototypeService, IMinemeldPrototypeLibrary } from '../../services/prototype';
 
+import './prototypetooltip.style';
+
+const template = require<string>('./prototypetooltip.tpl');
+
 /** @ngInject */
 export function prototypeTooltip(): ng.IDirective {
     return {
         restrict: 'E',
-        templateUrl: 'app/components/prototypetooltip/prototypetooltip.html',
+        template: template,
         scope: {
             name: '='
         },
@@ -14,8 +18,7 @@ export function prototypeTooltip(): ng.IDirective {
     };
 }
 
-/** @ngInject */
-export class PrototypeTooltipController {
+export class PrototypeTooltipController  implements angular.IController {
     name: string;
 
     prototypeName: string;
@@ -23,6 +26,7 @@ export class PrototypeTooltipController {
     prototypeDescription: string;
     libraryDescription: string;
 
+    /** @ngInject */
     constructor(MinemeldPrototypeService: IMinemeldPrototypeService) {
         var toks: string[];
 
@@ -38,4 +42,6 @@ export class PrototypeTooltipController {
             this.prototypeDescription = result.prototypes[toks[1]].description;
         });
     }
+
+    $onInit() {}
 }

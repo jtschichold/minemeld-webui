@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/main.d.ts" />
-
 import { IMinemeldStatusService, IMinemeldStatusNode, IMinemeldStatus } from  '../../app/services/status';
 import { IMinemeldMetricsService } from '../../app/services/metrics';
 import {
@@ -7,6 +5,11 @@ import {
     IMineMeldRunningConfigStatusService,
     IMinemeldResolvedConfigNode
 } from '../services/runningconfigstatus';
+
+import * as moment from 'moment';
+import * as angular from 'angular';
+
+import './dashboard.style';
 
 interface ITNodeIndicatorsStats {
     length: number;
@@ -26,15 +29,16 @@ interface IMetricsDictionary {
     [index: string]: IMetric[];
 }
 
-export class DashboardController {
+export class DashboardController implements angular.IController {
     mmstatus: IMinemeldStatusService;
     mmmetrics: IMinemeldMetricsService;
     MineMeldRunningConfigStatusService: IMineMeldRunningConfigStatusService;
-    moment: moment.MomentStatic;
     toastr: any;
     $interval: angular.IIntervalService;
     $scope: angular.IScope;
     $rootScope: angular.IRootScopeService;
+
+    $onInit() {}
 
     indicatorsOptions: any = {
         chart: {
@@ -53,7 +57,7 @@ export class DashboardController {
             showXAxis: false,
             interactiveLayer: {
                 tooltip: {
-                    headerFormatter: function(d: any) { return this.moment.unix(d).fromNow().toUpperCase(); },
+                    headerFormatter: function(d: any) { return moment.unix(d).fromNow().toUpperCase(); },
                     valueFormatter: function(d: any) { return Math.ceil(d); }
                 }
             },
@@ -84,7 +88,7 @@ export class DashboardController {
             showXAxis: false,
             interactiveLayer: {
                 tooltip: {
-                    headerFormatter: function(d: any) { return this.moment.unix(d).fromNow().toUpperCase(); }
+                    headerFormatter: function(d: any) { return moment.unix(d).fromNow().toUpperCase(); }
                 }
             },
             showYAxis: false,
@@ -128,14 +132,13 @@ export class DashboardController {
     constructor(toastr: any, $interval: angular.IIntervalService,
                 MinemeldStatusService: IMinemeldStatusService, MinemeldMetricsService: IMinemeldMetricsService,
                 MineMeldRunningConfigStatusService: IMineMeldRunningConfigStatusService,
-                moment: moment.MomentStatic, $scope: angular.IScope, $state: angular.ui.IStateService,
+                $scope: angular.IScope, $state: angular.ui.IStateService,
                 $rootScope: angular.IRootScopeService, $timeout: angular.ITimeoutService) {
         this.toastr = toastr;
         this.mmstatus = MinemeldStatusService;
         this.mmmetrics = MinemeldMetricsService;
         this.MineMeldRunningConfigStatusService = MineMeldRunningConfigStatusService;
         this.$interval = $interval;
-        this.moment = moment;
         this.$scope = $scope;
         this.$rootScope = $rootScope;
 

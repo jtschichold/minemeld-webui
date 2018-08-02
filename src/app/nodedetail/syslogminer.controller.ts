@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { INodeDetailResolverService } from '../../app/services/nodedetailresolver';
 import { IMinemeldConfigService } from '../../app/services/config';
@@ -8,8 +8,7 @@ import { IMinemeldStatusService, IMinemeldStatusNode, IMinemeldStatus } from '..
 import { IThrottled, IThrottleService } from '../../app/services/throttle';
 import { NodeDetailStatsController } from './nodedetail.stats.controller';
 
-declare var he: any;
-declare var jsyaml: any;
+import * as jsyaml from 'js-yaml';
 
 class SyslogMinerStatsController extends NodeDetailStatsController {
     protected updateMetricsNames() {
@@ -57,10 +56,11 @@ class SyslogMinerRulesController {
     constructor(toastr: any, MinemeldConfigService: IMinemeldConfigService,
                 DTOptionsBuilder: any, DTColumnBuilder: any,
                 $compile: angular.ICompileService, $scope: angular.IScope,
-                $modal: angular.ui.bootstrap.IModalService,
+                $uibModal: angular.ui.bootstrap.IModalService,
                 MinemeldStatusService: IMinemeldStatusService, $interval: angular.IIntervalService,
                 ConfirmService: IConfirmService,
                 $rootScope: angular.IRootScopeService,
+                private $sce: angular.ISCEService,
                 ThrottleService: IThrottleService) {
         this.MinemeldConfigService = MinemeldConfigService;
         this.toastr = toastr;
@@ -68,7 +68,7 @@ class SyslogMinerRulesController {
         this.DTOptionsBuilder = DTOptionsBuilder;
         this.$compile = $compile;
         this.$scope = $scope;
-        this.$modal = $modal;
+        this.$modal = $uibModal;
         this.ConfirmService = ConfirmService;
         this.MinemeldStatusService = MinemeldStatusService;
         this.$interval = $interval;
@@ -98,7 +98,7 @@ class SyslogMinerRulesController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/syslogminer.edit.modal.html',
+            template: require('./syslogminer.edit.modal.tpl'),
             controller: SyslogMinerEditRuleController,
             controllerAs: 'vm',
             bindToController: true,
@@ -125,7 +125,7 @@ class SyslogMinerRulesController {
         var mi: angular.ui.bootstrap.IModalServiceInstance;
 
         mi = this.$modal.open({
-            templateUrl: 'app/nodedetail/syslogminer.edit.modal.html',
+            template: require('./syslogminer.edit.modal.tpl'),
             controller: SyslogMinerEditRuleController,
             controllerAs: 'vm',
             bindToController: true,
@@ -154,7 +154,7 @@ class SyslogMinerRulesController {
                 });
 
             if (oldname !== result.name) {
-                metric = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+                metric = result.name.replace(/[^a-zA-Z0-9_-]/g, '_');
                 angular.element('#' + metric).attr('id', metric);
                 this.updateMinemeldStatus();
             }
@@ -270,7 +270,7 @@ class SyslogMinerRulesController {
             fc = <HTMLElement>(row.childNodes[row.childNodes.length - 2]);
             fc.setAttribute('id', data.name.replace(/[^a-zA-Z0-9_]/g, '_'));
 
-            vm.$compile(angular.element(row).contents())(vm.$scope);
+            vm.$compile(<any>angular.element(row).contents())(vm.$scope);
         })
         .withLanguage({
             'oPaginate': {
@@ -282,11 +282,11 @@ class SyslogMinerRulesController {
 
         this.dtColumns = [
             this.DTColumnBuilder.newColumn('name').withTitle('NAME').renderWith(function(data: any, type: any, full: any) {
-                return he.encode(data, { strict: true });
+                return vm.$sce.getTrustedHtml(data);
             }),
             this.DTColumnBuilder.newColumn('comment').withTitle('COMMENT').withOption('defaultContent', ' ').renderWith(function(data: any, type: any, full: any) {
                 if (data) {
-                    return he.encode(data, { strict: true });
+                    return vm.$sce.getTrustedHtml(data);
                 }
 
                 return '';
@@ -342,7 +342,7 @@ class SyslogMinerEditRuleController {
     editorChanged: any;
 
     /** @ngInject */
-    constructor($modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+    constructor($uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 title: string, rule: any, rule_names: string[],
                 MinemeldValidateService: IMinemeldValidateService, toastr: any) {
         var trule: any;
@@ -372,7 +372,7 @@ class SyslogMinerEditRuleController {
             this.definition = 'conditions:\n\nindicators:\n\nfields:\n\n';
         }
 
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.MinemeldValidateService = MinemeldValidateService;
         this.toastr = toastr;
 
@@ -472,12 +472,12 @@ class SyslogMinerEditRuleController {
 function syslogMinerRouterConfig($stateProvider: ng.ui.IStateProvider) {
     $stateProvider
         .state('nodedetail.syslogminerrules', {
-            templateUrl: 'app/nodedetail/syslogminer.rules.html',
+            template: require('./syslogminer.rules.tpl'),
             controller: SyslogMinerRulesController,
             controllerAs: 'vm'
         })
         .state('nodedetail.syslogminerstats', {
-            templateUrl: 'app/nodedetail/view.stats.html',
+            template: require('./view.stats.tpl'),
             controller: SyslogMinerStatsController,
             controllerAs: 'nodedetailstats'
         })

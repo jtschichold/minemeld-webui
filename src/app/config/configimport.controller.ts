@@ -1,10 +1,10 @@
-/// <reference path="../../../typings/main.d.ts" />
+import * as angular from 'angular';
 
 import { IMinemeldConfigService, IMinemeldCandidateConfigNode } from  '../../app/services/config';
 import { IMinemeldPrototypeService, IMinemeldPrototypeLibrary } from '../../app/services/prototype';
 import { IConfirmService } from '../../app/services/confirm';
 
-declare var jsyaml: any;
+const jsyaml: any = require('js-yaml');
 
 class ConfigAnnotations {
     private _annotations: { [key: number]: string[] } = {};
@@ -52,7 +52,7 @@ class ConfigAnnotations {
     }
 }
 
-export class ConfigureImportController {
+export class ConfigureImportController  implements angular.IController {
     $modalInstance: angular.ui.bootstrap.IModalServiceInstance;
     MinemeldConfigService: IMinemeldConfigService;
     toastr: any;
@@ -77,7 +77,7 @@ export class ConfigureImportController {
 
     /** @ngInject */
     constructor($scope: angular.IScope,
-                $modalInstance: angular.ui.bootstrap.IModalServiceInstance,
+                $uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
                 MinemeldConfigService: IMinemeldConfigService,
                 MinemeldPrototypeService: IMinemeldPrototypeService,
                 toastr: any,
@@ -85,7 +85,7 @@ export class ConfigureImportController {
                 ConfirmService: IConfirmService) {
         var vm: any = this;
 
-        this.$modalInstance = $modalInstance;
+        this.$modalInstance = $uibModalInstance;
         this.MinemeldConfigService = MinemeldConfigService;
         this.MinemeldPrototypeService = MinemeldPrototypeService;
         this.toastr = toastr;
@@ -123,6 +123,8 @@ export class ConfigureImportController {
         };
         vm.aceChanged = vm.validYaml.bind(this);
     }
+
+    $onInit() {}
 
     validYaml(): boolean {
         var nodeNames: string[];
