@@ -1,14 +1,11 @@
 import { IMineMeldAPIService } from './services/minemeldapi';
-import { IMinemeldStatusService } from './services/status';
-import { IMineMeldWebUIExtensionsLoaderService } from './services/webuiextensionsloader';
+import { TransitionService } from '@uirouter/angularjs';
 
 /** @ngInject */
 export function minemeldInit($state: angular.ui.IStateService,
-                             $rootScope: any,
-                             $cookies: angular.cookies.ICookiesService,
-                             MineMeldAPIService: IMineMeldAPIService,
-                             MinemeldStatusService: IMinemeldStatusService,
-                             MineMeldWebUIExtensionsLoaderService: IMineMeldWebUIExtensionsLoaderService) {
+                             $rootScope: angular.IRootScopeService,
+                             $transitions: TransitionService,
+                             MineMeldAPIService: IMineMeldAPIService) {
     document.getElementById('loader').style.display = 'none';
 
     $rootScope.mmBack = (state?: string) => {
@@ -21,19 +18,20 @@ export function minemeldInit($state: angular.ui.IStateService,
         return;
     };
 
-    $rootScope.$on('$stateChangeStart', (event: any, toState: any, toParams: any) => {
-        if (toState.name !== 'login' && !MineMeldAPIService.isLoggedIn()) {
-            event.preventDefault();
-            $state.go('login');
+    $transitions.onStart({}, transition => {
+        if (transition.to().name !== 'login' && !MineMeldAPIService.isLoggedIn()) {
+            return transition.router.stateService.target('login');
         }
-    });
 
-    $rootScope.$on('$stateChangeSuccess', (event: any, toState: any, toParams: any, fromState: any, fromParams: any) => {
-        $rootScope.mmPreviousState = {
-            state: fromState,
-            params: fromParams
-        };
+        transition.promise.then(
+            () => {
+                $rootScope.mmPreviousState = {
+                    state: transition.from(),
+                    params: transition.to()
+                };
 
-        MineMeldAPIService.cancelAPICalls();
+                MineMeldAPIService.cancelAPICalls();
+            }
+        )
     });
 }

@@ -76,7 +76,8 @@ module minemeldWebui {
     'mmSankey',
     'ui.select',
     'angularFileUpload',
-    'oc.lazyLoad'
+    'oc.lazyLoad',
+    'ngRedux'
   ])
   .config(config)
   .config(routerConfig)

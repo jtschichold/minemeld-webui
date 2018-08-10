@@ -1,4 +1,7 @@
+import ngRedux from 'ng-redux';
+
 import { IMineMeldAPIService } from  '../../app/services/minemeldapi';
+import { actions } from '../store';
 
 import './login.style';
 
@@ -8,18 +11,11 @@ export class LoginController  implements angular.IController {
 
     checking: boolean = false;
 
-    toastr: any;
-    $state: angular.ui.IStateService;
-    MineMeldAPIService: IMineMeldAPIService;
-
     /** @ngInject */
-    constructor($state: angular.ui.IStateService,
-                MineMeldAPIService: IMineMeldAPIService,
-                toastr: any) {
-        this.toastr = toastr;
-        this.$state = $state;
-        this.MineMeldAPIService = MineMeldAPIService;
-    }
+    constructor(private $state: angular.ui.IStateService,
+                private MineMeldAPIService: IMineMeldAPIService,
+                private $ngRedux: ngRedux.INgRedux,
+                private toastr: any) {}
 
     $onInit() {}
 
@@ -28,11 +24,15 @@ export class LoginController  implements angular.IController {
         this.MineMeldAPIService.logIn(this.username, this.password)
             .then((result: any) => {
                 this.checking = false;
+
+                this.$ngRedux.dispatch(actions.currentUser.login(this.username));
+
                 this.$state.go('dashboard');
             }, (error: any) => {
                 this.checking = false;
                 this.toastr.error('ERROR CHECKING CREDENTIALS: ' + error.statusText);
                 this.password = '';
+                this.$ngRedux.dispatch(actions.currentUser.logout());
             });
     }
 }

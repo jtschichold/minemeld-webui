@@ -1,6 +1,8 @@
 import 'script-loader!jquery';
+import 'redux';
 
 import 'angular';
+import 'ng-redux';
 
 import '@uirouter/angularjs';
 import 'angular-animate';
