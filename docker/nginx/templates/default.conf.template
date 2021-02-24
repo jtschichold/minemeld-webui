@@ -1,0 +1,73 @@
+upstream app_server {
+    server ${MINEMELD_ENGINE_HOST}:${MINEMELD_ENGINE_PORT} fail_timeout=0;
+}
+
+server {
+    listen 80;
+    server_name ~(.+)$;
+    return 301 https://$1:${NGINX_REDIRECT_PORT}$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+
+    server_name _;
+    ssl_certificate /etc/nginx/minemeld.cer;
+    ssl_certificate_key /etc/nginx/minemeld.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m;
+    ssl_session_tickets off;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    ssl_dhparam /etc/nginx/dhparam;
+
+    keepalive_timeout 5;
+    client_max_body_size 25m;
+
+    # path for static files
+    root /usr/share/nginx/html;
+
+    location = / {
+        index index.html;
+        expires off;
+    }
+
+    # first files then proxy to flask app
+    location / {
+        try_files $uri @proxy_to_app;
+    }
+
+    location ~* \.html$ {
+        try_files $uri @proxy_to_app;
+        expires -1;
+    }
+
+    # for SSE
+    location /status/events {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header Connection '';
+        proxy_http_version 1.1;
+        proxy_redirect off;
+        proxy_buffering off;
+        chunked_transfer_encoding off;
+        proxy_cache off;
+        proxy_read_timeout 120s;
+
+        expires -1;
+
+        proxy_pass   http://app_server;        
+    }
+
+    # for content that should be handled by mw flask app
+    location @proxy_to_app {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect http://$http_host/ https://$http_host/;
+
+        proxy_pass   http://app_server;
+    }
+}
